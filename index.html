@@ -16,7 +16,7 @@
       --muted: #9a6878;
       --card-from: #ffc0d8;
       --card-to: #ff8cb8;
-      --card-border: rgba(200,80,130,0.4);
+      --card-border: rgba(205,160,55,0.38);
     }
 
     html, body { height: 100%; overflow-x: hidden; }
@@ -44,7 +44,7 @@
     }
 
     .subtitle {
-      font-size: clamp(0.58rem, 1.6vw, 0.8rem);
+      font-size: clamp(0.72rem, 2vw, 0.8rem);
       color: var(--muted);
       letter-spacing: 0.32em;
       text-transform: uppercase;
@@ -68,7 +68,7 @@
     }
 
     .instruction {
-      font-size: clamp(0.8rem, 2.2vw, 1rem);
+      font-size: clamp(0.88rem, 2.4vw, 1rem);
       color: var(--muted);
       font-style: italic;
       padding: 0 1rem;
@@ -88,6 +88,7 @@
     #spread {
       position: relative;
       overflow: visible;
+      touch-action: none;
     }
 
     /* ── Card ── */
@@ -120,15 +121,16 @@
       position: relative;
       overflow: hidden;
       box-shadow:
-        0 4px 16px rgba(190,70,120,0.22),
-        0 1px 5px rgba(190,70,120,0.14);
+        0 4px 16px rgba(190,70,120,0.18),
+        0 1px 5px rgba(190,70,120,0.10),
+        0 0 0 1px rgba(205,160,55,0.18) inset;
     }
 
     .card-face::before {
       content: '';
       position: absolute;
       inset: max(3px, 5%);
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(210,165,60,0.32);
       border-radius: 5px;
       pointer-events: none;
     }
@@ -155,16 +157,45 @@
 
     /* Draw / selection animation */
     .card.drawing {
-      animation: drawCard 0.92s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+      animation: drawCard 1.1s cubic-bezier(0.18, 0.8, 0.32, 1) forwards;
       z-index: 999 !important;
       filter: none !important;
     }
 
     @keyframes drawCard {
-      0%   { transform: translateY(0px)   rotate(var(--base-rot))              scale(1);    }
-      30%  { transform: translateY(-22px)  rotate(calc(var(--base-rot) * 0.5)) scale(1.06); }
-      68%  { transform: translateY(-52px)  rotate(calc(var(--base-rot) * 0.1)) scale(1.18); }
-      100% { transform: translateY(-46px)  rotate(0deg)                        scale(1.14); }
+      0%   { transform: translateY(0px)   rotate(var(--base-rot))               scale(1);    opacity: 1; }
+      18%  { transform: translateY(-12px)  rotate(calc(var(--base-rot) * 0.55)) scale(1.04); opacity: 1; }
+      50%  { transform: translateY(-68px)  rotate(calc(var(--base-rot) * 0.06)) scale(1.18); opacity: 1; }
+      72%  { transform: translateY(-76px)  rotate(0deg)                         scale(1.20); opacity: 0.95; }
+      100% { transform: translateY(-62px)  rotate(0deg)                         scale(1.15); opacity: 0.9; }
+    }
+
+    /* Sparkle particles */
+    .sparkle-particle {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,180,215,0.7) 55%, transparent 100%);
+      z-index: 998;
+      animation: sparkleFly 1.3s ease-out forwards;
+    }
+    @keyframes sparkleFly {
+      0%   { opacity: 0.9; transform: translate(0,0) scale(1); }
+      100% { opacity: 0;   transform: translate(var(--dx), var(--dy)) scale(0.08); }
+    }
+
+    /* Smoke-clearing reveal for modal content */
+    .reveal-body {
+      position: relative;
+    }
+    .reveal-body.smoke-on {
+      animation: smokeReveal 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    @keyframes smokeReveal {
+      0%   { opacity: 0.04; filter: blur(16px); }
+      28%  { opacity: 0.38; filter: blur(9px);  }
+      62%  { opacity: 0.78; filter: blur(3px);  }
+      100% { opacity: 1;    filter: blur(0);    }
     }
 
     .card.chosen .card-face {
@@ -201,13 +232,13 @@
       position: relative;
       text-align: center;
       box-shadow: 0 24px 64px rgba(200,80,120,0.16);
-      animation: flipIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+      animation: floatUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
-    @keyframes flipIn {
-      0%   { opacity: 0; transform: perspective(700px) rotateY(-72deg) scale(0.9); }
-      58%  { opacity: 1; transform: perspective(700px) rotateY(7deg)   scale(1.01); }
-      100% { opacity: 1; transform: perspective(700px) rotateY(0deg)   scale(1); }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(28px) scale(0.94); }
+      55%  { opacity: 1; transform: translateY(-5px)  scale(1.01); }
+      100% { opacity: 1; transform: translateY(0)     scale(1); }
     }
 
     .modal::before {
@@ -253,10 +284,10 @@
     }
 
     .energy-tag {
-      font-size: clamp(0.65rem, 2vw, 0.76rem);
+      font-size: clamp(0.72rem, 2.2vw, 0.78rem);
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.26em;
+      letter-spacing: 0.22em;
       margin-bottom: 1.2rem;
     }
 
@@ -266,20 +297,10 @@
       margin: 0 auto 1rem;
     }
 
-    .properties {
-      font-size: clamp(0.68rem, 2vw, 0.76rem);
-      color: #4a7a55;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      margin-bottom: 1.3rem;
-      text-align: left;
-      line-height: 1.7;
-    }
-
     .msg-label {
-      font-size: clamp(0.6rem, 2vw, 0.7rem);
+      font-size: clamp(0.68rem, 2vw, 0.72rem);
       text-transform: uppercase;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.24em;
       color: var(--muted);
       margin-bottom: 0.55rem;
       text-align: left;
@@ -315,9 +336,9 @@
     footer {
       position: relative;
       z-index: 1;
-      padding: 0.5rem 1rem 1.5rem;
+      padding: 0.5rem 1rem max(1.5rem, env(safe-area-inset-bottom));
       text-align: center;
-      font-size: clamp(0.62rem, 1.8vw, 0.72rem);
+      font-size: clamp(0.7rem, 2vw, 0.74rem);
       color: var(--muted);
       opacity: 0.62;
       letter-spacing: 0.12em;
@@ -340,20 +361,21 @@
   <div id="spread"></div>
 </div>
 
-<footer>Trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
+<footer>trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
 
 <!-- Modal -->
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="crystalName">
   <div class="modal" id="modal">
     <button class="close-btn" id="closeBtn" aria-label="Close">✕</button>
     <div class="crystal-display" id="crystalDisplay"></div>
-    <h2 class="crystal-name" id="crystalName"></h2>
-    <p class="energy-tag" id="energyTag"></p>
-    <div class="modal-rule"></div>
-    <p class="properties" id="crystalProps"></p>
-    <p class="msg-label">Your message for today</p>
-    <p class="message" id="crystalMsg"></p>
-    <button class="save-btn" id="saveBtn">✦ &nbsp;Save to Photos</button>
+    <div class="reveal-body" id="revealBody">
+      <h2 class="crystal-name" id="crystalName"></h2>
+      <p class="energy-tag" id="energyTag"></p>
+      <div class="modal-rule"></div>
+      <p class="msg-label">your message for today</p>
+      <p class="message" id="crystalMsg"></p>
+      <button class="save-btn" id="saveBtn">✦ &nbsp;Save to Photos</button>
+    </div>
   </div>
 </div>
 
@@ -474,16 +496,16 @@ function crystalSVG(crystal) {
 
 // North Star SVG (card back)
 const northStarSVG = `<svg class="card-gem" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <circle cx="30" cy="40" r="17" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="0.8"/>
-  <circle cx="30" cy="40" r="11" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-  <path d="M30,4 L36,34 L56,40 L36,46 L30,76 L24,46 L4,40 L24,34 Z" fill="rgba(255,255,255,0.90)"/>
+  <circle cx="30" cy="40" r="17" fill="none" stroke="rgba(210,168,72,0.38)" stroke-width="0.9"/>
+  <circle cx="30" cy="40" r="11" fill="none" stroke="rgba(210,168,72,0.22)" stroke-width="0.55"/>
+  <path d="M30,4 L36,34 L56,40 L36,46 L30,76 L24,46 L4,40 L24,34 Z" fill="rgba(255,255,255,0.92)" stroke="rgba(205,160,55,0.60)" stroke-width="0.9" stroke-linejoin="round"/>
   <path d="M30,4 L36,34 L30,40 L24,34 Z" fill="rgba(255,255,255,0.07)"/>
-  <line x1="38" y1="32" x2="41.5" y2="28.5" stroke="rgba(255,255,255,0.40)" stroke-width="0.75" stroke-linecap="round"/>
-  <line x1="22" y1="32" x2="18.5" y2="28.5" stroke="rgba(255,255,255,0.28)" stroke-width="0.65" stroke-linecap="round"/>
-  <line x1="38" y1="48" x2="41.5" y2="51.5" stroke="rgba(255,255,255,0.26)" stroke-width="0.65" stroke-linecap="round"/>
-  <line x1="22" y1="48" x2="18.5" y2="51.5" stroke="rgba(255,255,255,0.20)" stroke-width="0.60" stroke-linecap="round"/>
-  <circle cx="30" cy="40" r="4.5" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="30" cy="40" r="2.2" fill="rgba(255,255,255,0.98)"/>
+  <line x1="38" y1="32" x2="41.5" y2="28.5" stroke="rgba(215,172,70,0.50)" stroke-width="0.75" stroke-linecap="round"/>
+  <line x1="22" y1="32" x2="18.5" y2="28.5" stroke="rgba(215,172,70,0.36)" stroke-width="0.65" stroke-linecap="round"/>
+  <line x1="38" y1="48" x2="41.5" y2="51.5" stroke="rgba(215,172,70,0.32)" stroke-width="0.65" stroke-linecap="round"/>
+  <line x1="22" y1="48" x2="18.5" y2="51.5" stroke="rgba(215,172,70,0.26)" stroke-width="0.60" stroke-linecap="round"/>
+  <circle cx="30" cy="40" r="4.5" fill="rgba(215,172,70,0.22)"/>
+  <circle cx="30" cy="40" r="2.2" fill="rgba(220,180,60,0.96)"/>
 </svg>`;
 
 // ── Crystal data — 30 stones, research-accurate colors ──
@@ -493,217 +515,217 @@ const crystals = [
     c: { light:"#d8a8f0", mid:"#9040c0", dark:"#4e1878", glow:"rgba(144,64,192,0.5)" },
     energy: "Intuition · Calm · Clarity",
     properties: "Spiritual awareness  ·  Stress relief  ·  Inner peace",
-    message: "Amethyst carries a deeply calming energy that quiets mental chatter and sharpens intuition. Today, slow down enough to hear your own inner knowing — it is clearer than you think."
+    message: "Your intuition is clearer than you think right now. Slow down a little and listen to that quiet voice inside. It knows."
   },
   {
     name: "Rose Quartz", shape: "tumbled",
     c: { light:"#ffd8e8", mid:"#e890a8", dark:"#b06080", glow:"rgba(232,144,168,0.5)" },
     energy: "Love · Compassion · Healing",
     properties: "Unconditional love  ·  Self-worth  ·  Emotional warmth",
-    message: "Rose Quartz is associated with the heart and the energy of gentle, unconditional love. Today is a good day to extend kindness inward — you deserve the same care you freely give others."
+    message: "Today is a really good day to be a little softer with yourself. You give so much love out. Let some of it come back in."
   },
   {
     name: "Clear Quartz", shape: "point",
     c: { light:"#f8fdff", mid:"#d8ecf8", dark:"#90aec0", glow:"rgba(216,236,248,0.55)" },
     energy: "Clarity · Amplification · Focus",
     properties: "Intention-setting  ·  Healing  ·  Amplifies energy",
-    message: "Clear Quartz is known as the master healer — it amplifies whatever energy or intention you bring to it. Set a clear intention today and watch how your focus shapes what unfolds around you."
+    message: "Whatever you're putting your attention on is getting amplified today. So choose something that feels good and let your focus do the work."
   },
   {
     name: "Citrine", shape: "cluster",
     c: { light:"#ffe888", mid:"#e0a820", dark:"#9a7000", glow:"rgba(224,168,32,0.55)" },
     energy: "Abundance · Joy · Optimism",
     properties: "Confidence  ·  Prosperity  ·  Creativity",
-    message: "Citrine is one of the few crystals associated with pure positive energy — it does not hold negativity. Its sunny warmth encourages gratitude and openness. Notice the abundance already present in your day."
+    message: "Good things are already here, even when they're easy to miss. Look for them. The warmth and abundance you want is closer than you realize."
   },
   {
     name: "Labradorite", shape: "slab",
     c: { light:"#70c8e0", mid:"#204870", dark:"#0c1e38", glow:"rgba(32,72,112,0.6)" },
     energy: "Transformation · Intuition · Magic",
     properties: "Inner knowing  ·  Protection  ·  Awakening",
-    message: "Labradorite is a stone of transformation and hidden depth — its iridescent flash symbolises the magic that lives beneath the surface. Trust that what you cannot yet see is already shifting in your favour."
+    message: "Something magical is shifting beneath the surface, even if you can't quite see it yet. Trust the process you're in. The magic is already in motion."
   },
   {
     name: "Moonstone", shape: "tumbled",
     c: { light:"#f0eef8", mid:"#b8c4dc", dark:"#687090", glow:"rgba(184,196,220,0.45)" },
     energy: "New Beginnings · Intuition · Flow",
     properties: "Feminine energy  ·  Emotional balance  ·  Inner strength",
-    message: "Moonstone is long associated with cycles, new beginnings, and the ebb and flow of emotion. Like the moon, you are always moving through phases. Today, honour where you are in your cycle and flow rather than force."
+    message: "You're in a phase, not a permanent state. Go with it instead of against it. You'll land where you're meant to."
   },
   {
     name: "Lapis Lazuli", shape: "rough",
     c: { light:"#6898d0", mid:"#1c4890", dark:"#081030", glow:"rgba(28,72,144,0.6)" },
     energy: "Wisdom · Truth · Expression",
     properties: "Authentic communication  ·  Inner knowing  ·  Clarity",
-    message: "Lapis Lazuli has been prized for millennia as a stone of wisdom and honest self-expression. Today is a powerful day for speaking your truth — do so with confidence, knowing your perspective holds real value."
+    message: "You have something valuable to say today. Say it. Your voice and your perspective hold more weight than you give them credit for."
   },
   {
     name: "Tiger's Eye", shape: "rough",
     c: { light:"#d4a858", mid:"#9a6418", dark:"#4a2a08", glow:"rgba(154,100,24,0.5)" },
     energy: "Courage · Confidence · Focus",
     properties: "Willpower  ·  Mental clarity  ·  Grounding",
-    message: "Tiger's Eye combines earthy grounding with solar confidence. It is associated with steady courage and the ability to move forward even in uncertainty. Today, take the step you have been considering — your footing is solid."
+    message: "That step you keep thinking about? Maybe today's the day to take it. You're steadier than you feel, and your footing is solid."
   },
   {
     name: "Selenite", shape: "point",
     c: { light:"#fefeff", mid:"#e4e0d0", dark:"#a09888", glow:"rgba(228,224,208,0.45)" },
     energy: "Peace · Cleansing · Clarity",
     properties: "Energy clearing  ·  Calm  ·  Higher connection",
-    message: "Selenite is associated with cleansing, mental clarity, and a deep sense of peace. It is said to dissolve confusion and stagnant energy. Today, breathe out what is cluttering your mind and allow stillness to fill the space."
+    message: "Breathe something out today. Clear a little mental space and notice how much lighter everything gets when you let it."
   },
   {
     name: "Green Aventurine", shape: "tumbled",
     c: { light:"#78c888", mid:"#38804a", dark:"#163a20", glow:"rgba(56,128,74,0.5)" },
     energy: "Luck · Growth · Opportunity",
     properties: "Prosperity  ·  Optimism  ·  Emotional calm",
-    message: "Green Aventurine is widely known as the Stone of Opportunity. Its energy is linked to good fortune and the courage to embrace new possibilities. Keep your eyes open today — a door is already ajar."
+    message: "Something good is finding its way to you. Stay open and keep your eyes soft. A door might already be cracking open."
   },
   {
     name: "Carnelian", shape: "tumbled",
     c: { light:"#ff8a50", mid:"#d05018", dark:"#7a2808", glow:"rgba(208,80,24,0.5)" },
     energy: "Creativity · Vitality · Action",
     properties: "Motivation  ·  Passion  ·  Courage",
-    message: "Carnelian is a stone of action, fire, and creative force. It supports bold moves and revives energy when you feel stuck. Today, lean into your passion — the momentum you need is already inside you."
+    message: "There's real fire in you today. Whatever you've been putting off, lean into it now. The momentum is already there, waiting."
   },
   {
     name: "Malachite", shape: "slab",
     c: { light:"#58c870", mid:"#187040", dark:"#062a18", glow:"rgba(24,112,64,0.55)" },
     energy: "Transformation · Heart Healing",
     properties: "Emotional balance  ·  Courage to grow  ·  Release",
-    message: "Malachite is a powerful stone of transformation and heart-centre healing. It encourages honest reflection and the courage to grow through change. Trust that whatever is shifting in you right now is moving you forward."
+    message: "Change is doing you a favour right now, even if it doesn't feel like it yet. Something better is growing in the space this is making."
   },
   {
     name: "Aquamarine", shape: "faceted",
     c: { light:"#a8e8f0", mid:"#40b0c8", dark:"#107888", glow:"rgba(64,176,200,0.5)" },
     energy: "Courage · Communication · Calm",
     properties: "Clarity of expression  ·  Stress relief  ·  Harmony",
-    message: "Aquamarine carries the calm, steady energy of the sea. It is associated with courage, clear communication, and releasing anxiety. Approach your conversations today with openness — the right words will come naturally."
+    message: "Breathe first, then speak. The right words are already there. Approach today's conversations with an open heart and they'll go better than you expect."
   },
   {
     name: "Pyrite", shape: "cube",
     c: { light:"#f0e080", mid:"#c8a818", dark:"#786008", glow:"rgba(200,168,24,0.55)" },
     energy: "Abundance · Willpower · Confidence",
     properties: "Manifestation  ·  Protection  ·  Strength",
-    message: "Pyrite reflects golden light and is associated with confidence, willpower, and the energy needed to bring ideas into reality. Today, stand fully in your capability — you have more than enough to work with."
+    message: "You are genuinely more capable than you're giving yourself credit for right now. Stand in that today. You have more than enough to work with."
   },
   {
     name: "Lepidolite", shape: "slab",
     c: { light:"#e0b8e8", mid:"#a868c0", dark:"#583078", glow:"rgba(168,104,192,0.45)" },
     energy: "Calm · Transition · Balance",
     properties: "Anxiety relief  ·  Emotional equilibrium  ·  Rest",
-    message: "Lepidolite contains natural lithium and is associated with calming anxious energy and supporting gentle transitions. If things feel uncertain, today is a reminder: you do not need to have it all figured out — ease is available to you."
+    message: "You don't have to figure it all out right now. Ease is available to you today, if you let yourself settle into it."
   },
   {
     name: "Sunstone", shape: "tumbled",
     c: { light:"#ffb858", mid:"#e07018", dark:"#802808", glow:"rgba(224,112,24,0.5)" },
     energy: "Joy · Vitality · Personal Power",
     properties: "Optimism  ·  Independence  ·  Leadership",
-    message: "Sunstone is linked to light, warmth, and the energy of the sun. It encourages personal power, enthusiasm, and the freedom to be fully yourself. Bring your full, bright self forward today — your light has a place here."
+    message: "Be unapologetically yourself today. Your brightness is not too much. It's exactly what's needed, and it has a place here."
   },
   {
     name: "Rhodonite", shape: "tumbled",
     c: { light:"#e8889e", mid:"#c03c68", dark:"#601838", glow:"rgba(192,60,104,0.5)" },
     energy: "Forgiveness · Compassion · Healing",
     properties: "Emotional balance  ·  Self-worth  ·  Love",
-    message: "Rhodonite is associated with forgiveness, emotional healing, and compassionate love. It supports releasing old wounds without bitterness. Today, let yourself be both the giver and receiver of grace."
+    message: "There's room to forgive today, yourself or someone else or both. Let yourself be the giver and receiver of grace. It suits you."
   },
   {
     name: "Sodalite", shape: "rough",
     c: { light:"#6888d0", mid:"#2840a0", dark:"#0e1850", glow:"rgba(40,64,160,0.55)" },
     energy: "Truth · Logic · Calm Mind",
     properties: "Rational thought  ·  Honest communication  ·  Clarity",
-    message: "Sodalite is associated with the mind — it supports rational thinking, truthful communication, and calm confidence in your own knowledge. Trust your reasoning today; your analysis is sound."
+    message: "Trust your thinking today. Your reasoning is sound and your analysis is solid. Speak your truth with quiet confidence."
   },
   {
     name: "Obsidian", shape: "rough",
     c: { light:"#504860", mid:"#181420", dark:"#060408", glow:"rgba(48,40,60,0.5)" },
     energy: "Truth · Grounding · Protection",
     properties: "Self-reflection  ·  Strength  ·  Clarity",
-    message: "Obsidian is a grounding stone associated with honest self-reflection and protection from scattered energy. Its clarity is a gift — today, be honest with yourself about what you truly need, and take one step toward it."
+    message: "Be honest with yourself about what you actually need today. One small step toward that is more than enough."
   },
   {
     name: "Howlite", shape: "tumbled",
     c: { light:"#f4f0e8", mid:"#d0c8b8", dark:"#807870", glow:"rgba(208,200,184,0.4)" },
     energy: "Patience · Mindfulness · Rest",
     properties: "Calming overactive mind  ·  Awareness  ·  Sleep",
-    message: "Howlite is associated with quieting an overactive mind and cultivating patience. It invites you to be present rather than future-anxious. Today, notice one small thing of beauty right in front of you."
+    message: "Slow down just a little today. Something beautiful is right in front of you. Be here for it instead of somewhere else in your head."
   },
   {
     name: "Angelite", shape: "tumbled",
     c: { light:"#b8daf2", mid:"#6898c4", dark:"#284878", glow:"rgba(104,152,196,0.45)" },
     energy: "Peace · Divine Connection · Compassion",
     properties: "Serenity  ·  Gentle communication  ·  Guidance",
-    message: "Angelite is associated with a soft, peaceful energy and a sense of being held and guided. It supports calm, compassionate communication. Today, speak and act from a place of gentleness — with yourself and with others."
+    message: "You are being held today, even if you can't feel it. Speak gently, move gently, and trust that softness is its own kind of strength."
   },
   {
     name: "Fluorite", shape: "faceted",
     c: { light:"#c090f0", mid:"#7840c0", dark:"#351868", glow:"rgba(120,64,192,0.5)" },
     energy: "Focus · Mental Clarity · Learning",
     properties: "Concentration  ·  Orderly thinking  ·  Balance",
-    message: "Fluorite is known as the Genius Stone for its association with mental clarity, focus, and learning. If your thoughts feel scattered, this energy supports you in organising what matters most and working through it with ease."
+    message: "If things feel a bit scattered today, just pick one thing and go there. Focus on that one thing and clarity will follow."
   },
   {
     name: "Bloodstone", shape: "rough",
     c: { light:"#50b060", mid:"#186028", dark:"#061c10", glow:"rgba(24,96,40,0.5)" },
     energy: "Courage · Strength · Vitality",
     properties: "Resilience  ·  Endurance  ·  Confidence in action",
-    message: "Bloodstone has historically been associated with courage, physical vitality, and resilient strength in the face of challenges. Today carries steady, grounded energy — you have the endurance for whatever is in front of you."
+    message: "You have more endurance than you realize. Whatever today brings, you've genuinely got it. You're built for this."
   },
   {
     name: "Prehnite", shape: "tumbled",
     c: { light:"#c0e098", mid:"#70b050", dark:"#385820", glow:"rgba(112,176,80,0.45)" },
     energy: "Intuition · Healing · Letting Go",
     properties: "Inner knowing  ·  Trust  ·  Peaceful release",
-    message: "Prehnite is associated with deep intuition, unconditional love, and the peaceful act of letting go. It encourages you to heal by trusting what you already know. Release what you have been holding onto — your inner compass is reliable."
+    message: "Your inner compass is reliable. Release what you've been holding onto and let your intuition lead. It already knows the way."
   },
   {
     name: "Black Tourmaline", shape: "rough",
     c: { light:"#404050", mid:"#181820", dark:"#060608", glow:"rgba(40,40,60,0.45)" },
     energy: "Grounding · Protection · Stability",
     properties: "Energetic boundaries  ·  Safety  ·  Strength",
-    message: "Black Tourmaline is one of the most widely used protective and grounding stones. It is associated with creating a stable foundation and clear energetic boundaries. Today, you are supported and grounded — stand firmly in your own energy."
+    message: "You are grounded and protected today. Your boundaries are yours to hold and to keep. Stand firmly in your own energy."
   },
   {
     name: "Larimar", shape: "tumbled",
     c: { light:"#c0ecf8", mid:"#48b0d8", dark:"#186898", glow:"rgba(72,176,216,0.5)" },
     energy: "Serenity · Flow · Feminine Power",
     properties: "Calm  ·  Oceanic clarity  ·  Ease",
-    message: "Larimar carries the cooling, expansive energy of sea and sky. Known as the Atlantis Stone, it is associated with divine feminine wisdom and serene clarity. Today, release what you are holding too tightly — like the ocean, peace returns naturally when you stop resisting the tide."
+    message: "Stop holding on so tightly today. Like the ocean, peace comes back naturally when you stop resisting it. Let it find you."
   },
   {
     name: "Kyanite", shape: "slab",
     c: { light:"#78b0e8", mid:"#2858b0", dark:"#0c1e60", glow:"rgba(40,88,176,0.55)" },
     energy: "Alignment · Truth · Balance",
     properties: "Clear communication  ·  Alignment  ·  Bridging",
-    message: "Kyanite is one of the rare minerals that does not accumulate negative energy. It is associated with alignment — of body, mind, and truth. Today is a day for honest, clear-headed communication. Say what you mean, and trust that the right words will create the right bridges."
+    message: "Say what you mean today. Clear, honest words create the right bridges. Your truth is allowed to take up space, no softening needed."
   },
   {
     name: "Garnet", shape: "faceted",
     c: { light:"#e84858", mid:"#b01828", dark:"#580008", glow:"rgba(176,24,40,0.55)" },
     energy: "Passion · Vitality · Devotion",
     properties: "Creative fire  ·  Commitment  ·  Strength",
-    message: "Garnet's deep red energy is associated with passion, devotion, and the creative life force within you. It supports commitment — to your goals, your people, and your own becoming. Today, let what you love most remind you what you are truly working toward."
+    message: "Let what you love remind you why you're doing all of this. Your devotion and your fire are exactly what's needed right now."
   },
   {
     name: "Amazonite", shape: "rough",
     c: { light:"#88d8c0", mid:"#28a078", dark:"#0c5838", glow:"rgba(40,160,120,0.5)" },
     energy: "Truth · Courage · Harmony",
     properties: "Authentic voice  ·  Boundaries  ·  Clarity",
-    message: "Amazonite is associated with truth-telling and harmony — it helps you discern what is real from what is fear. It supports setting boundaries with grace and speaking your authentic truth without aggression. Today, trust your own knowing and hold your ground with gentleness."
+    message: "What feels like fear might just be something worth looking at more closely. Trust your own knowing and hold your ground, gently but firmly."
   },
   {
     name: "Chrysocolla", shape: "slab",
     c: { light:"#72c8c0", mid:"#1890a0", dark:"#084858", glow:"rgba(24,144,160,0.5)" },
     energy: "Wisdom · Expression · Healing",
     properties: "Feminine strength  ·  Gentle power  ·  Teaching",
-    message: "Chrysocolla carries the quiet strength of feminine wisdom — associated with teaching, healing, and the power of calm, authentic expression. It reminds you that gentleness is not weakness. Today, your most powerful move may be your most compassionate one."
+    message: "Gentleness is not weakness. Your most powerful move today might just be your most compassionate one."
   },
   {
     name: "Charoite", shape: "tumbled",
     c: { light:"#c888e0", mid:"#7828a8", dark:"#380860", glow:"rgba(120,40,168,0.5)" },
     energy: "Transformation · Purpose · Acceptance",
     properties: "Soul path  ·  Release of fear  ·  Spiritual insight",
-    message: "Charoite is a stone of transformation and acceptance, associated with releasing deep-seated fear and aligning with your true purpose. Today, something that once felt like an obstacle may reveal itself as part of your path. Trust the process you are moving through."
+    message: "Something that felt like an obstacle might actually be part of the path. Trust where you're being led, even when it's unclear."
   }
 ];
 
@@ -720,12 +742,27 @@ const deck = shuffle([...crystals]);
 const spreadEl = document.getElementById('spread');
 let cardEls = [];
 
-deck.forEach(crystal => {
+deck.forEach((crystal, i) => {
+  const t    = deck.length > 1 ? i / (deck.length - 1) : 0.5;
+  // Wave ombre: sine oscillation keeps everything pink (no red), 2 gentle waves across deck
+  const wave = Math.sin(t * Math.PI * 4);           // 2 full cycles
+  const hue  = 340 + wave * 4;                      // 336-344°, warm pink only
+  const sfr  = 55  + wave * 14;                     // 41-69%
+  const lfr  = 87  - wave * 7;                      // 80-94%
+  const sto  = 64  + wave * 14;                     // 50-78%
+  const lto  = 76  - wave * 7;                      // 69-83%
+  const cardFrom   = `hsl(${hue.toFixed(0)},${sfr.toFixed(0)}%,${lfr.toFixed(0)}%)`;
+  const cardTo     = `hsl(${hue.toFixed(0)},${sto.toFixed(0)}%,${lto.toFixed(0)}%)`;
+  const borderAlpha = (0.28 + Math.abs(wave) * 0.20).toFixed(2);
+
   const card = document.createElement('div');
   card.className = 'card';
   card.setAttribute('tabindex', '0');
   card.setAttribute('role', 'button');
   card.setAttribute('aria-label', 'Oracle card — tap to reveal');
+  card.style.setProperty('--card-from', cardFrom);
+  card.style.setProperty('--card-to', cardTo);
+  card.style.setProperty('--card-border', `rgba(205,160,55,${borderAlpha})`);
   card.innerHTML = `<div class="card-face">${northStarSVG}</div>`;
   spreadEl.appendChild(card);
   cardEls.push({ el: card, crystal });
@@ -738,9 +775,10 @@ function layoutSpread() {
   const vw      = window.innerWidth;
   const availW  = Math.min(vw, 940) - 18;
   const N       = cardEls.length;
-  const overlapRatio = 0.30;
+  const overlapRatio = vw < 480 ? 0.18 : 0.22;
+  const maxCardW     = vw < 480 ? 110  : 140;
   let cardW = availW / (1 + (N - 1) * overlapRatio);
-  cardW = Math.max(28, Math.min(90, cardW));
+  cardW = Math.max(32, Math.min(maxCardW, cardW));
   const cardH   = Math.round(cardW * 1.52);
   const step    = cardW * overlapRatio;
   const totalW  = cardW + (N - 1) * step;
@@ -816,64 +854,70 @@ spreadEl.addEventListener('mousemove', e => {
 });
 spreadEl.addEventListener('mouseleave', resetHover);
 spreadEl.addEventListener('touchmove', e => {
+  e.preventDefault();
   applyHover(e.touches[0].clientX - spreadEl.getBoundingClientRect().left);
-}, { passive: true });
-spreadEl.addEventListener('touchend', resetHover);
+}, { passive: false });
+spreadEl.addEventListener('touchend', resetHover, { passive: true });
 
-// ── Magical sound (Web Audio API crystal bowl) ──
+// ── Magical sound (angelic chime) ──
 function scheduleMagicSound(ac, startAt) {
   const master = ac.createGain();
-  master.gain.value = 0.5;
+  master.gain.value = 0.30;
   master.connect(ac.destination);
 
-  // Crystal bowl fundamental + harmonics (432 Hz base)
-  [
-    [432,  1.0,  0,     3.8],
-    [864,  0.52, 0.05,  3.2],
-    [1296, 0.28, 0.09,  2.6],
-    [1728, 0.16, 0.14,  2.1],
-    [2592, 0.09, 0.20,  1.6],
-    [3024, 0.05, 0.25,  1.2],
-  ].forEach(([freq, amp, delay, decay]) => {
+  function tone(freq, delay, amp, attack, decay) {
     const osc = ac.createOscillator();
     const env = ac.createGain();
     osc.type = 'sine';
     osc.frequency.value = freq;
     const t0 = startAt + delay;
     env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(amp, t0 + 0.018);
-    env.gain.setValueAtTime(amp * 0.82, t0 + 0.1);
+    env.gain.linearRampToValueAtTime(amp, t0 + attack);
+    env.gain.setValueAtTime(amp * 0.88, t0 + attack + 0.05);
     env.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
     osc.connect(env); env.connect(master);
-    osc.start(t0); osc.stop(t0 + decay + 0.05);
-  });
+    osc.start(t0); osc.stop(t0 + decay + 0.08);
+  }
 
-  // Sparkle overtones
-  [4200, 5040, 6048].forEach((freq, i) => {
-    const osc = ac.createOscillator();
-    const env = ac.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    const t0 = startAt + i * 0.07;
-    env.gain.setValueAtTime(0, t0);
-    env.gain.linearRampToValueAtTime(0.038, t0 + 0.01);
-    env.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.65);
-    osc.connect(env); env.connect(master);
-    osc.start(t0); osc.stop(t0 + 0.7);
-  });
+  // Angelic blooming chord — soft long attack, 3-4 second decay
+  // [freq, delay, amp, attack, decay]
+  tone(523,  0.00, 0.60, 0.10, 3.6);   // C5  — opens first
+  tone(659,  0.14, 0.52, 0.10, 3.2);   // E5
+  tone(784,  0.26, 0.46, 0.12, 2.9);   // G5
+  tone(1047, 0.38, 0.40, 0.12, 2.6);   // C6
+  tone(880,  0.20, 0.44, 0.10, 2.8);   // A5
+  tone(1319, 0.50, 0.34, 0.14, 2.3);   // E6  — highest, comes last
 
-  // Rising shimmer sweep before the strike
-  const sweep = ac.createOscillator();
-  const sweepGain = ac.createGain();
-  sweep.type = 'sine';
-  sweep.frequency.setValueAtTime(900, startAt - 0.35);
-  sweep.frequency.exponentialRampToValueAtTime(1800, startAt);
-  sweepGain.gain.setValueAtTime(0, startAt - 0.35);
-  sweepGain.gain.linearRampToValueAtTime(0.07, startAt - 0.18);
-  sweepGain.gain.linearRampToValueAtTime(0, startAt + 0.05);
-  sweep.connect(sweepGain); sweepGain.connect(master);
-  const sweepStart = Math.max(ac.currentTime + 0.001, startAt - 0.36);
-  sweep.start(sweepStart); sweep.stop(startAt + 0.1);
+  // Soft octave shimmer above each main tone (very quiet)
+  tone(1046, 0.05, 0.10, 0.18, 2.4);
+  tone(1318, 0.55, 0.08, 0.20, 2.0);
+
+  // Gentle high sparkle at the very end — faint, dreamy
+  [[2093, 0.68, 0.12, 0.09, 0.90],
+   [2637, 0.80, 0.09, 0.09, 0.75],
+   [3136, 0.92, 0.07, 0.09, 0.60]].forEach(([f,d,a,at,dc]) => tone(f,d,a,at,dc));
+}
+
+// ── Sparkle particles ──
+function spawnSparkles(cardEl) {
+  const rect = cardEl.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 3;
+  const count = 14;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'sparkle-particle';
+    const angle = (i / count) * Math.PI * 2;
+    const dist  = 28 + (i % 3) * 18;
+    const dx    = Math.cos(angle) * dist;
+    const dy    = Math.sin(angle) * dist - 22;
+    const size  = 4 + (i % 4) * 2.5;
+    el.style.cssText = `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;
+      --dx:${dx.toFixed(1)}px;--dy:${dy.toFixed(1)}px;
+      animation-delay:${(i * 0.04).toFixed(2)}s;animation-duration:${(1.1 + (i % 3) * 0.15).toFixed(2)}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1600);
+  }
 }
 
 // ── Card selection ──
@@ -895,7 +939,7 @@ function drawCard(cardEl, crystal) {
     try {
       ac = new AC();
       // Schedule sound to start ~850ms from now (when modal opens)
-      scheduleMagicSound(ac, ac.currentTime + 0.82);
+      scheduleMagicSound(ac, ac.currentTime + 0.95);
       setTimeout(() => { try { ac.close(); } catch(e){} }, 6000);
     } catch(e) {}
   }
@@ -905,11 +949,12 @@ function drawCard(cardEl, crystal) {
   void cardEl.offsetWidth;
   cardEl.classList.add('chosen', 'drawing');
   cardEl.style.zIndex = 999;
+  spawnSparkles(cardEl);
 
   setTimeout(() => {
     cardEl.classList.remove('drawing');
     showModal(crystal);
-  }, 880);
+  }, 1060);
 }
 
 cardEls.forEach(({ el, crystal }) => {
@@ -924,7 +969,6 @@ const overlay     = document.getElementById('overlay');
 const displayEl   = document.getElementById('crystalDisplay');
 const nameEl      = document.getElementById('crystalName');
 const energyEl    = document.getElementById('energyTag');
-const propsEl     = document.getElementById('crystalProps');
 const msgEl       = document.getElementById('crystalMsg');
 const saveBtnEl   = document.getElementById('saveBtn');
 let   currentCrystal = null;
@@ -934,11 +978,38 @@ function showModal(crystal) {
   displayEl.innerHTML  = crystalSVG(crystal);
   nameEl.textContent   = crystal.name;
   energyEl.textContent = crystal.energy;
-  propsEl.textContent  = crystal.properties;
   msgEl.textContent    = crystal.message;
   overlay.classList.add('open');
   overlay.querySelector('.modal').scrollTop = 0;
   document.getElementById('closeBtn').focus();
+  // Smoke-clearing reveal
+  const rb = document.getElementById('revealBody');
+  rb.classList.remove('smoke-on');
+  void rb.offsetWidth;
+  rb.classList.add('smoke-on');
+  setTimeout(() => spawnModalSmoke(), 60);
+}
+
+function spawnModalSmoke() {
+  const modal = document.getElementById('modal');
+  const rect  = modal.getBoundingClientRect();
+  const count = 20;
+  for (let i = 0; i < count; i++) {
+    const el  = document.createElement('div');
+    el.className = 'sparkle-particle';
+    const x   = rect.left + rect.width  * (0.08 + 0.84 * (i / count));
+    const y   = rect.top  + rect.height * (0.25 + 0.45 * ((i % 5) / 4));
+    const ang = -Math.PI/2 + (i % 7 - 3) * 0.35;
+    const dist = 28 + (i % 4) * 16;
+    const dx  = (Math.cos(ang) * dist).toFixed(1);
+    const dy  = (Math.sin(ang) * dist - 10).toFixed(1);
+    const sz  = 3 + (i % 5) * 2;
+    el.style.cssText = `left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;width:${sz}px;height:${sz}px;` +
+      `--dx:${dx}px;--dy:${dy}px;` +
+      `animation-delay:${(i * 0.06).toFixed(2)}s;animation-duration:${(1.5 + (i % 3) * 0.25).toFixed(2)}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2400);
+  }
 }
 
 function closeModal() {
@@ -957,6 +1028,18 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closeModal();
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 // ── Save to Photos ──
+function svgToImage(svgStr, w, h) {
+  return new Promise(resolve => {
+    const sized = svgStr.replace('<svg ', `<svg width="${w}" height="${h}" `);
+    const blob  = new Blob([sized], { type: 'image/svg+xml;charset=utf-8' });
+    const url   = URL.createObjectURL(blob);
+    const img   = new Image();
+    img.onload  = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 function wrapText(ctx, text, x, y, maxW, lh) {
   const words = text.split(' ');
   let line = '', cy = y;
@@ -1008,40 +1091,39 @@ async function saveCard(crystal) {
   ctx.fillStyle = '#a07878';
   ctx.font = '400 20px Georgia,serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦  CRYSTAL  ORACLE  ✦', W/2, 90);
+  ctx.fillText('✦  CRYSTAL  ORACLE  ✦', W/2, 82);
 
-  drawNorthStarCanvas(ctx, W/2, 162, 48);
+  // Draw the actual crystal SVG
+  const crystalImg = await svgToImage(crystalSVG(crystal), 260, 260);
+  if (crystalImg) ctx.drawImage(crystalImg, W/2 - 130, 102, 260, 260);
 
   ctx.fillStyle = '#c8922a';
-  ctx.font = '400 68px Georgia,serif';
-  ctx.fillText(crystal.name, W/2, 268);
+  ctx.font = '400 64px Georgia,serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(crystal.name, W/2, 402);
 
   ctx.fillStyle = '#a07878';
-  ctx.font = '400 21px Georgia,serif';
-  ctx.fillText(crystal.energy.toUpperCase(), W/2, 316);
+  ctx.font = '400 20px Georgia,serif';
+  ctx.fillText(crystal.energy.toUpperCase(), W/2, 442);
 
   const dg = ctx.createLinearGradient(180,0,620,0);
   dg.addColorStop(0,'transparent'); dg.addColorStop(0.5,'#c8922a'); dg.addColorStop(1,'transparent');
   ctx.strokeStyle = dg; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(180,348); ctx.lineTo(620,348); ctx.stroke();
-
-  ctx.fillStyle = '#4a7a55';
-  ctx.font = '400 19px Georgia,serif';
-  ctx.fillText(crystal.properties.toUpperCase(), W/2, 386);
+  ctx.beginPath(); ctx.moveTo(180,468); ctx.lineTo(620,468); ctx.stroke();
 
   ctx.fillStyle = '#a07878';
   ctx.font = '400 17px Georgia,serif';
   ctx.textAlign = 'left';
-  ctx.fillText('YOUR MESSAGE FOR TODAY', 72, 440);
+  ctx.fillText('YOUR MESSAGE FOR TODAY', 72, 510);
 
   ctx.fillStyle = '#2e1a0e';
-  ctx.font = '400 28px Georgia,serif';
-  wrapText(ctx, crystal.message, 72, 490, W-144, 48);
+  ctx.font = '400 27px Georgia,serif';
+  wrapText(ctx, crystal.message, 72, 558, W-144, 46);
 
   ctx.fillStyle = 'rgba(154,104,120,0.55)';
   ctx.font = 'italic 400 17px Georgia,serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Trust your intuition · made by tej with love', W/2, H-52);
+  ctx.fillText('trust your intuition · made by tej with love', W/2, H-52);
 
   can.toBlob(async blob => {
     const fname = `${crystal.name.replace(/'/g,'')} Crystal Oracle.png`;
