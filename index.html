@@ -440,33 +440,10 @@
       font-family: 'Cormorant Garant', Georgia, serif;
     }
 
-    #card-jump-form { display: none; margin-top: 0.5rem; }
-    #card-jump-input {
-      width: 130px;
-      padding: 0.34rem 0.8rem;
-      background: rgba(255,255,255,0.45);
-      border: 1px solid rgba(205,160,55,0.38);
-      border-radius: 20px;
-      font-family: 'Cormorant Garant', Georgia, serif;
-      font-size: clamp(0.76rem, 2vw, 0.82rem);
-      font-style: italic;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: 0.08em;
-      outline: none;
-      -moz-appearance: textfield;
-      appearance: textfield;
-      -webkit-appearance: none;
-    }
-    #card-jump-input::-webkit-outer-spin-button,
-    #card-jump-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    #card-jump-input::placeholder { color: var(--muted); opacity: 0.65; font-style: italic; }
-    #card-jump-input:focus { border-color: rgba(205,160,55,0.65); background: rgba(255,255,255,0.62); }
 
     @media (max-width: 639px) {
       #mobile-controls { display: flex; }
       #mobile-bottom { display: flex; }
-      #card-jump-form { display: block; }
       #swipe-hint { display: block; }
       #spread-wrap { overflow: hidden; padding-bottom: 0; }
       .instruction { display: none; }
@@ -498,9 +475,6 @@
 <div id="mobile-bottom">
   <p class="mobile-instruction">still your mind &amp; choose the card that calls to you</p>
   <span id="mobile-counter">1 of 33</span>
-  <form id="card-jump-form" autocomplete="off">
-    <input id="card-jump-input" type="number" min="1" max="33" placeholder="open card number…" />
-  </form>
 </div>
 
 <footer>trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
@@ -1117,24 +1091,6 @@ function setMobileCardPositions(delta) {
 window.addEventListener('pointerup',     stopCycle);
 window.addEventListener('pointercancel', stopCycle);
 
-// ── Card number jump (mobile) ──
-const jumpForm  = document.getElementById('card-jump-form');
-const jumpInput = document.getElementById('card-jump-input');
-if (jumpForm) {
-  jumpForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const num = parseInt(jumpInput.value, 10);
-    jumpInput.value = '';
-    jumpInput.blur();
-    if (isNaN(num) || num < 1 || num > cardEls.length) return;
-    mobileIdx = num - 1;
-    layoutMobileDeck(true);
-    setTimeout(() => {
-      const { el, crystal } = cardEls[mobileIdx];
-      drawCard(el, crystal);
-    }, 380);
-  });
-}
 
 // ── Audio: unlock AudioContext on first user gesture (required by iOS) ──
 const _AudioCtx = window.AudioContext || window.webkitAudioContext;
