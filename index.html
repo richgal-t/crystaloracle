@@ -297,25 +297,6 @@
       margin: 0 auto 1rem;
     }
 
-    .about-label {
-      font-size: clamp(0.68rem, 2vw, 0.72rem);
-      text-transform: uppercase;
-      letter-spacing: 0.24em;
-      color: var(--muted);
-      margin-bottom: 0.35rem;
-      text-align: left;
-    }
-
-    .crystal-about {
-      font-size: clamp(0.82rem, 2.4vw, 0.92rem);
-      color: var(--muted);
-      font-style: italic;
-      line-height: 1.5;
-      margin-bottom: 1.1rem;
-      text-align: left;
-      opacity: 0.85;
-    }
-
     .msg-label {
       font-size: clamp(0.68rem, 2vw, 0.72rem);
       text-transform: uppercase;
@@ -367,19 +348,20 @@
     /* ── Mobile deck controls ── */
     #mobile-controls {
       display: none;
+      position: absolute;
+      inset: 0;
       align-items: center;
-      justify-content: center;
-      gap: 2rem;
-      padding: 0.7rem 0 0.3rem;
-      position: relative;
-      z-index: 2;
+      justify-content: space-between;
+      padding: 0 10px;
+      pointer-events: none;
+      z-index: 50;
     }
     .deck-btn {
-      width: 54px; height: 54px;
+      width: 50px; height: 50px;
       border-radius: 50%;
-      border: 1px solid rgba(205,160,55,0.45);
-      background: rgba(255,255,255,0.22);
-      color: rgba(180,130,30,0.90);
+      border: 1px solid rgba(205,160,55,0.38);
+      background: rgba(255,255,255,0.30);
+      color: rgba(160,110,20,0.85);
       font-size: 2rem;
       line-height: 1;
       font-family: Georgia, serif;
@@ -387,27 +369,53 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
       touch-action: none;
+      pointer-events: all;
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       transition: background 0.12s, transform 0.1s;
+      box-shadow: 0 2px 10px rgba(180,100,130,0.12);
     }
-    .deck-btn:active { transform: scale(0.90); background: rgba(255,255,255,0.38); }
-    #deck-counter {
-      font-size: 0.78rem;
+    .deck-btn:active { transform: scale(0.88); background: rgba(255,255,255,0.50); }
+
+    /* ── Swipe hint ── */
+    #swipe-hint {
+      position: fixed;
+      bottom: 130px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(0.72rem, 2vw, 0.78rem);
       color: var(--muted);
       letter-spacing: 0.16em;
-      font-family: 'Cormorant Garant', Georgia, serif;
-      min-width: 56px;
-      text-align: center;
       font-style: italic;
-      opacity: 0.75;
+      font-family: 'Cormorant Garant', Georgia, serif;
+      background: rgba(255,252,248,0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 0.48rem 1.2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(205,160,55,0.20);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+      display: none;
+    }
+    #swipe-hint.show {
+      animation: hintFade 3.8s ease forwards;
+    }
+    @keyframes hintFade {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+      72%  { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
     }
 
     @media (max-width: 639px) {
       #mobile-controls { display: flex; }
+      #swipe-hint { display: block; }
       #spread-wrap { overflow: hidden; padding-bottom: 0; }
       .instruction { display: none; }
     }
@@ -426,13 +434,13 @@
 
 <div id="spread-wrap">
   <div id="spread"></div>
+  <div id="mobile-controls">
+    <button class="deck-btn" id="btn-prev">&#8249;</button>
+    <button class="deck-btn" id="btn-next">&#8250;</button>
+  </div>
 </div>
 
-<div id="mobile-controls">
-  <button class="deck-btn" id="btn-prev">&#8249;</button>
-  <span id="deck-counter">1 of 30</span>
-  <button class="deck-btn" id="btn-next">&#8250;</button>
-</div>
+<div id="swipe-hint">swipe to explore</div>
 
 <footer>trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
 
@@ -445,8 +453,6 @@
       <h2 class="crystal-name" id="crystalName"></h2>
       <p class="energy-tag" id="energyTag"></p>
       <div class="modal-rule"></div>
-      <p class="about-label">about</p>
-      <p class="crystal-about" id="crystalAbout"></p>
       <p class="msg-label">your message for today</p>
       <p class="message" id="crystalMsg"></p>
       <button class="save-btn" id="saveBtn">✦ &nbsp;Save to Photos</button>
@@ -589,218 +595,218 @@ const crystals = [
     name: "Amethyst", shape: "cluster",
     c: { light:"#d8a8f0", mid:"#9040c0", dark:"#4e1878", glow:"rgba(144,64,192,0.5)" },
     energy: "Intuition · Calm · Clarity",
-    about: "a stone of spiritual protection and sobriety of mind, revered across ancient civilisations",
-    message: "Your intuition is clearer than you think right now. Slow down a little and listen to that quiet voice inside. It knows."
+    about: "a stone of deep calm and spiritual protection, long worn by those seeking to quiet the mind and open inner sight",
+    message: "Your intuition is clearer than you think right now. Slow down a little and listen to that quiet voice inside. It knows. That's enough to go on."
   },
   {
     name: "Rose Quartz", shape: "tumbled",
     c: { light:"#ffd8e8", mid:"#e890a8", dark:"#b06080", glow:"rgba(232,144,168,0.5)" },
     energy: "Love · Compassion · Healing",
-    about: "the stone of unconditional love, used in love rituals and offerings across ancient cultures",
-    message: "Today is a really good day to be a little softer with yourself. You give so much love out. Let some of it come back in."
+    about: "the stone of unconditional love, tender and patient in the way it softens a heart that has been holding itself closed",
+    message: "Today is a really good day to be a little softer with yourself. You give so much love out. Let some of it come back in. You deserve your own tenderness."
   },
   {
     name: "Clear Quartz", shape: "point",
     c: { light:"#f8fdff", mid:"#d8ecf8", dark:"#90aec0", glow:"rgba(216,236,248,0.55)" },
     energy: "Clarity · Amplification · Focus",
-    about: "the master healer, used in sacred ceremonies and healing practices across millennia",
-    message: "Whatever you're putting your attention on is getting amplified today. So choose something that feels good and let your focus do the work."
+    about: "the master healer and amplifier, bringing clarity wherever it rests and magnifying the energy of everything it touches",
+    message: "Whatever you're putting your attention on is getting amplified today. So choose something that feels good and let your focus do the work. Your energy is a compass right now."
   },
   {
     name: "Citrine", shape: "cluster",
     c: { light:"#ffe888", mid:"#e0a820", dark:"#9a7000", glow:"rgba(224,168,32,0.55)" },
     energy: "Abundance · Joy · Optimism",
-    about: "the merchant's stone, carrying the energy of the sun and a magnet for abundance",
-    message: "Good things are already here, even when they're easy to miss. Look for them. The warmth and abundance you want is closer than you realize."
+    about: "a sunlit stone of joy and abundance, carrying the warmth of the sun and an open invitation for good things to find you",
+    message: "Good things are already here, even when they're easy to miss. Look for them. The warmth and abundance you want is closer than you realize. Expect something nice today."
   },
   {
     name: "Labradorite", shape: "slab",
     c: { light:"#70c8e0", mid:"#204870", dark:"#0c1e38", glow:"rgba(32,72,112,0.6)" },
     energy: "Transformation · Intuition · Magic",
-    about: "born from the Aurora Borealis, a stone of magic, mystery, and hidden gifts",
-    message: "Something magical is shifting beneath the surface, even if you can't quite see it yet. Trust the process you're in. The magic is already in motion."
+    about: "a stone of magic and transformation, shimmering with hidden light the way gifts often wait just beneath the surface of things",
+    message: "Something magical is shifting beneath the surface, even if you can't quite see it yet. Trust the process you're in. The magic is already in motion. Stay curious about what's unfolding."
   },
   {
     name: "Moonstone", shape: "tumbled",
     c: { light:"#f0eef8", mid:"#b8c4dc", dark:"#687090", glow:"rgba(184,196,220,0.45)" },
     energy: "New Beginnings · Intuition · Flow",
-    about: "sacred to lunar goddesses across many traditions, carrying the tides of emotion within it",
-    message: "You're in a phase, not a permanent state. Go with it instead of against it. You'll land where you're meant to."
+    about: "sacred to lunar goddesses and tides alike, attuned to the rhythms of emotion and the quiet wisdom that comes with change",
+    message: "You're in a phase, not a permanent state. Go with it instead of against it. You'll land where you're meant to. The tide always turns."
   },
   {
     name: "Lapis Lazuli", shape: "rough",
     c: { light:"#6898d0", mid:"#1c4890", dark:"#081030", glow:"rgba(28,72,144,0.6)" },
     energy: "Wisdom · Truth · Expression",
-    about: "ground into pigment for Egyptian burial rites and worn by royalty as a symbol of truth",
-    message: "You have something valuable to say today. Say it. Your voice and your perspective hold more weight than you give them credit for."
+    about: "a stone of truth and royal wisdom, prized across civilisations for its power to open the voice and deepen the mind",
+    message: "You have something valuable to say today. Say it. Your voice and your perspective hold more weight than you give them credit for. Don't let it sit unspoken."
   },
   {
     name: "Tiger's Eye", shape: "rough",
     c: { light:"#d4a858", mid:"#9a6418", dark:"#4a2a08", glow:"rgba(154,100,24,0.5)" },
     energy: "Courage · Confidence · Focus",
-    about: "carried by Roman soldiers for courage, sharpening focus and steadying the will in battle",
-    message: "That step you keep thinking about? Maybe today's the day to take it. You're steadier than you feel, and your footing is solid."
+    about: "a stone of steady courage and focused will, grounding the spirit while keeping the eyes clear and the footing sure",
+    message: "That step you keep thinking about? Maybe today's the day to take it. You're steadier than you feel, and your footing is solid. Your confidence will catch up to your courage."
   },
   {
     name: "Selenite", shape: "point",
     c: { light:"#fefeff", mid:"#e4e0d0", dark:"#a09888", glow:"rgba(228,224,208,0.45)" },
     energy: "Peace · Cleansing · Clarity",
-    about: "named for Selene, goddess of the moon, holding celestial light and angelic energy",
-    message: "Breathe something out today. Clear a little mental space and notice how much lighter everything gets when you let it."
+    about: "a stone of celestial light and divine calm, carrying the moon's gentle clarity and a quality of higher, angelic presence",
+    message: "Breathe something out today. Clear a little mental space and notice how much lighter everything gets when you let it. Peace is available right now, right here."
   },
   {
     name: "Green Aventurine", shape: "tumbled",
     c: { light:"#78c888", mid:"#38804a", dark:"#163a20", glow:"rgba(56,128,74,0.5)" },
     energy: "Luck · Growth · Opportunity",
-    about: "one of the luckiest stones in history, a trusted ally for gamblers and bold risk-takers",
-    message: "Something good is finding its way to you. Stay open and keep your eyes soft. A door might already be cracking open."
+    about: "one of the great luck stones, an open invitation for fortune to find those willing to say yes to what's next",
+    message: "Something good is finding its way to you. Stay open and keep your eyes soft. A door might already be cracking open. Say yes to what comes."
   },
   {
     name: "Carnelian", shape: "tumbled",
     c: { light:"#ff8a50", mid:"#d05018", dark:"#7a2808", glow:"rgba(208,80,24,0.5)" },
     energy: "Creativity · Vitality · Action",
-    about: "worn by ancient warriors and orators, a stone of courage, passion, and life force",
-    message: "There's real fire in you today. Whatever you've been putting off, lean into it now. The momentum is already there, waiting."
+    about: "a stone of fire and life force, worn by warriors and creators alike to stoke the passion and courage already within",
+    message: "There's real fire in you today. Whatever you've been putting off, lean into it now. The momentum is already there, waiting. Start small and let it build."
   },
   {
     name: "Malachite", shape: "slab",
     c: { light:"#58c870", mid:"#187040", dark:"#062a18", glow:"rgba(24,112,64,0.55)" },
     energy: "Transformation · Heart Healing",
-    about: "a stone of the heart and transformation, sometimes called the midwife stone for its role in rebirth",
-    message: "Change is doing you a favour right now, even if it doesn't feel like it yet. Something better is growing in the space this is making."
+    about: "a stone of the heart and deep transformation, drawing buried feeling to the surface so it can finally be healed",
+    message: "Change is doing you a favour right now, even if it doesn't feel like it yet. Something better is growing in the space this is making. Let it make room."
   },
   {
     name: "Aquamarine", shape: "faceted",
     c: { light:"#a8e8f0", mid:"#40b0c8", dark:"#107888", glow:"rgba(64,176,200,0.5)" },
     energy: "Courage · Communication · Calm",
-    about: "sacred to sea goddesses, calming storms and protecting those who crossed the ocean",
-    message: "Breathe first, then speak. The right words are already there. Approach today's conversations with an open heart and they'll go better than you expect."
+    about: "a stone of the ocean and the voice, calming what feels turbulent and helping truth find its way to the surface",
+    message: "Breathe first, then speak. The right words are already there. Approach today's conversations with an open heart and they'll go better than you expect. Calm is your superpower today."
   },
   {
     name: "Pyrite", shape: "cube",
     c: { light:"#f0e080", mid:"#c8a818", dark:"#786008", glow:"rgba(200,168,24,0.55)" },
     energy: "Abundance · Willpower · Confidence",
-    about: "used in ancient shamanic practice as a mirror to see one's true power and potential",
-    message: "You are genuinely more capable than you're giving yourself credit for right now. Stand in that today. You have more than enough to work with."
+    about: "a mirror of inner power, used by seers and shamans to help the seeker see clearly what they are truly capable of",
+    message: "You are genuinely more capable than you're giving yourself credit for right now. Stand in that today. You have more than enough to work with. Act from that knowing."
   },
   {
     name: "Lepidolite", shape: "slab",
     c: { light:"#e0b8e8", mid:"#a868c0", dark:"#583078", glow:"rgba(168,104,192,0.45)" },
     energy: "Calm · Transition · Balance",
-    about: "a gentle ally through life's transitions, easing anxiety and softening life's sharp edges",
-    message: "You don't have to figure it all out right now. Ease is available to you today, if you let yourself settle into it."
+    about: "a stone of gentle ease through transition, softening the sharp edges of change so the unknown feels less frightening",
+    message: "You don't have to figure it all out right now. Ease is available to you today, if you let yourself settle into it. Rest is part of the work."
   },
   {
     name: "Sunstone", shape: "tumbled",
     c: { light:"#ffb858", mid:"#e07018", dark:"#802808", glow:"rgba(224,112,24,0.5)" },
     energy: "Joy · Vitality · Personal Power",
-    about: "associated with Ra in ancient Egypt, carrying the light and warmth of the sun within it",
-    message: "Be unapologetically yourself today. Your brightness is not too much. It's exactly what's needed, and it has a place here."
+    about: "a stone of personal power and radiance, carrying the sun's warmth and its quiet invitation to be fully yourself",
+    message: "Be unapologetically yourself today. Your brightness is not too much. It's exactly what's needed, and it has a place here. Shine without apology."
   },
   {
     name: "Rhodonite", shape: "tumbled",
     c: { light:"#e8889e", mid:"#c03c68", dark:"#601838", glow:"rgba(192,60,104,0.5)" },
     energy: "Forgiveness · Compassion · Healing",
-    about: "known as the rescue stone, used by first responders and healers of the heart throughout history",
-    message: "There's room to forgive today, yourself or someone else or both. Let yourself be the giver and receiver of grace. It suits you."
+    about: "the rescue stone, carrying the frequency of compassionate healing and the reminder that forgiveness is its own kind of power",
+    message: "There's room to forgive today, yourself or someone else or both. Let yourself be the giver and receiver of grace. It suits you. Grace is a gift you can give yourself first."
   },
   {
     name: "Sodalite", shape: "rough",
     c: { light:"#6888d0", mid:"#2840a0", dark:"#0e1850", glow:"rgba(40,64,160,0.55)" },
     energy: "Truth · Logic · Calm Mind",
-    about: "a stone of truth and inner knowing, quieting the ego and opening the third eye",
-    message: "Trust your thinking today. Your reasoning is sound and your analysis is solid. Speak your truth with quiet confidence."
+    about: "a stone of truth and inner knowing, quieting the chatter of the mind so the deeper, wiser voice can finally be heard",
+    message: "Trust your thinking today. Your reasoning is sound and your analysis is solid. Speak your truth with quiet confidence. You already know more than you think."
   },
   {
     name: "Obsidian", shape: "rough",
     c: { light:"#504860", mid:"#181420", dark:"#060408", glow:"rgba(48,40,60,0.5)" },
     energy: "Truth · Grounding · Protection",
-    about: "used by ancient shamans as a scrying mirror to reveal shadow and release what no longer serves",
-    message: "Be honest with yourself about what you actually need today. One small step toward that is more than enough."
+    about: "a stone of honest shadow work and protection, revealing what is hidden within so it can be released and healed",
+    message: "Be honest with yourself about what you actually need today. One small step toward that is more than enough. You don't have to do it all at once."
   },
   {
     name: "Howlite", shape: "tumbled",
     c: { light:"#f4f0e8", mid:"#d0c8b8", dark:"#807870", glow:"rgba(208,200,184,0.4)" },
     energy: "Patience · Mindfulness · Rest",
-    about: "a stone of gentle awareness, absorbing anger and slowing the restless mind",
-    message: "Slow down just a little today. Something beautiful is right in front of you. Be here for it instead of somewhere else in your head."
+    about: "a stone of gentle awareness and patience, absorbing what is jagged and slowing the mind down to where peace already lives",
+    message: "Slow down just a little today. Something beautiful is right in front of you. Be here for it instead of somewhere else in your head. This moment has something in it for you."
   },
   {
     name: "Angelite", shape: "tumbled",
     c: { light:"#b8daf2", mid:"#6898c4", dark:"#284878", glow:"rgba(104,152,196,0.45)" },
     energy: "Peace · Divine Connection · Compassion",
-    about: "a bridge to angelic realms, carrying a frequency of peace and gentle divine guidance",
-    message: "You are being held today, even if you can't feel it. Speak gently, move gently, and trust that softness is its own kind of strength."
+    about: "a stone of divine connection and soft guidance, carrying the frequency of angelic presence and a deep, tender peace",
+    message: "You are being held today, even if you can't feel it. Speak gently, move gently, and trust that softness is its own kind of strength. You are not as alone as you sometimes feel."
   },
   {
     name: "Fluorite", shape: "faceted",
     c: { light:"#c090f0", mid:"#7840c0", dark:"#351868", glow:"rgba(120,64,192,0.5)" },
     energy: "Focus · Mental Clarity · Learning",
-    about: "called the genius stone, absorbing chaotic energy and restructuring the mind's field",
-    message: "If things feel a bit scattered today, just pick one thing and go there. Focus on that one thing and clarity will follow."
+    about: "the genius stone, bringing order to mental chaos and helping the mind settle into the clarity it was always capable of",
+    message: "If things feel a bit scattered today, just pick one thing and go there. Focus on that one thing and clarity will follow. One thread is enough to follow."
   },
   {
     name: "Bloodstone", shape: "rough",
     c: { light:"#50b060", mid:"#186028", dark:"#061c10", glow:"rgba(24,96,40,0.5)" },
     energy: "Courage · Strength · Vitality",
-    about: "carried by soldiers in ancient Rome to stop wounds and grant invincible courage in battle",
-    message: "You have more endurance than you realize. Whatever today brings, you've genuinely got it. You're built for this."
+    about: "a stone of deep courage and endurance, drawing on the kind of strength that shows up exactly when it is needed most",
+    message: "You have more endurance than you realize. Whatever today brings, you've genuinely got it. You're built for this. You've come through harder things than this."
   },
   {
     name: "Prehnite", shape: "tumbled",
     c: { light:"#c0e098", mid:"#70b050", dark:"#385820", glow:"rgba(112,176,80,0.45)" },
     energy: "Intuition · Healing · Letting Go",
-    about: "the first mineral named after a person, healing the healer and honouring what is ready to go",
-    message: "Your inner compass is reliable. Release what you've been holding onto and let your intuition lead. It already knows the way."
+    about: "a stone of surrender and intuition, healing the healer and gently clearing what the heart is finally ready to release",
+    message: "Your inner compass is reliable. Release what you've been holding onto and let your intuition lead. It already knows the way. You can trust the pull you feel."
   },
   {
     name: "Black Tourmaline", shape: "rough",
     c: { light:"#404050", mid:"#181820", dark:"#060608", glow:"rgba(40,40,60,0.45)" },
     energy: "Grounding · Protection · Stability",
-    about: "one of the most powerful protective stones, used for centuries to ward off negativity",
-    message: "You are grounded and protected today. Your boundaries are yours to hold and to keep. Stand firmly in your own energy."
+    about: "one of the most protective stones in existence, holding you steady in your own energy and keeping everything else out",
+    message: "You are grounded and protected today. Your boundaries are yours to hold and to keep. Stand firmly in your own energy. No one needs access to your peace."
   },
   {
     name: "Larimar", shape: "tumbled",
     c: { light:"#c0ecf8", mid:"#48b0d8", dark:"#186898", glow:"rgba(72,176,216,0.5)" },
     energy: "Serenity · Flow · Feminine Power",
-    about: "found only in the Dominican Republic, carrying the memory of Atlantis within its ocean blue",
-    message: "Stop holding on so tightly today. Like the ocean, peace comes back naturally when you stop resisting it. Let it find you."
+    about: "a stone of oceanic serenity and feminine power, carrying a frequency of peace so deep it feels like water under sunlight",
+    message: "Stop holding on so tightly today. Like the ocean, peace comes back naturally when you stop resisting it. Let it find you. Ease is not something you have to earn."
   },
   {
     name: "Kyanite", shape: "slab",
     c: { light:"#78b0e8", mid:"#2858b0", dark:"#0c1e60", glow:"rgba(40,88,176,0.55)" },
     energy: "Alignment · Truth · Balance",
-    about: "one of the rare stones that never holds negative energy, a natural bridge between people",
-    message: "Say what you mean today. Clear, honest words create the right bridges. Your truth is allowed to take up space, no softening needed."
+    about: "one of the rare stones that holds no negative charge, a natural channel for truth, alignment, and clear connection between people",
+    message: "Say what you mean today. Clear, honest words create the right bridges. Your truth is allowed to take up space, no softening needed. Clarity is a kindness to everyone."
   },
   {
     name: "Garnet", shape: "faceted",
     c: { light:"#e84858", mid:"#b01828", dark:"#580008", glow:"rgba(176,24,40,0.55)" },
     energy: "Passion · Vitality · Devotion",
-    about: "carried as a protective talisman for centuries, lighting the way through darkness",
-    message: "Let what you love remind you why you're doing all of this. Your devotion and your fire are exactly what's needed right now."
+    about: "a stone of passionate devotion and protective fire, carried for centuries to light the way through what feels like darkness",
+    message: "Let what you love remind you why you're doing all of this. Your devotion and your fire are exactly what's needed right now. Return to what matters to you."
   },
   {
     name: "Amazonite", shape: "rough",
     c: { light:"#88d8c0", mid:"#28a078", dark:"#0c5838", glow:"rgba(40,160,120,0.5)" },
     energy: "Truth · Courage · Harmony",
-    about: "worn by Amazonian warriors as a stone of courageous truth-telling and fierce integrity",
-    message: "What feels like fear might just be something worth looking at more closely. Trust your own knowing and hold your ground, gently but firmly."
+    about: "a stone of courageous truth-telling, reminding those who hold it that their voice has power and their boundaries have worth",
+    message: "What feels like fear might just be something worth looking at more closely. Trust your own knowing and hold your ground, gently but firmly. Your instincts are good."
   },
   {
     name: "Chrysocolla", shape: "slab",
     c: { light:"#72c8c0", mid:"#1890a0", dark:"#084858", glow:"rgba(24,144,160,0.5)" },
     energy: "Wisdom · Expression · Healing",
-    about: "associated with the great teachers and healers of antiquity, a stone of feminine wisdom",
-    message: "Gentleness is not weakness. Your most powerful move today might just be your most compassionate one."
+    about: "a stone of feminine wisdom and compassionate expression, teaching that softness held with intention is its own kind of strength",
+    message: "Gentleness is not weakness. Your most powerful move today might just be your most compassionate one. Lead with softness and see what opens."
   },
   {
     name: "Charoite", shape: "tumbled",
     c: { light:"#c888e0", mid:"#7828a8", dark:"#380860", glow:"rgba(120,40,168,0.5)" },
     energy: "Transformation · Purpose · Acceptance",
-    about: "found only along one Siberian river, transforming fear into faith and service into love",
-    message: "Something that felt like an obstacle might actually be part of the path. Trust where you're being led, even when it's unclear."
+    about: "a stone of soul-level transformation, rare and singular in the way it turns fear into faith and purpose into love",
+    message: "Something that felt like an obstacle might actually be part of the path. Trust where you're being led, even when it's unclear. This is unfolding in your favour."
   }
 ];
 
@@ -844,10 +850,19 @@ deck.forEach((crystal, i) => {
 });
 
 // ── Layout ──
-const MOBILE_BP = 640;
-let mobileIdx   = 0;
-let cycleTimer  = null;
+const MOBILE_BP  = 640;
+let mobileIdx    = 0;
+let cycleTimer   = null;
 let resizeTimer;
+let _mobileCardW = 0;
+let _mobileCX    = 0;
+let _mobileVW    = 0;
+let _ac          = null; // keep AudioContext alive (prevent GC)
+let _swipeStartX = 0;
+let _swipeStartY = 0;
+let _swipeActive = false;
+let _wasSwiping  = false;
+let _hintShown   = false;
 
 function isMobile() { return window.innerWidth < MOBILE_BP; }
 
@@ -912,14 +927,25 @@ function layoutMobileDeck(animated) {
   const cx     = Math.round((vw - cardW) / 2);
   const cy     = 12;
   const trans  = animated
-    ? 'left 0.28s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.28s ease, transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94)'
+    ? 'left 0.32s cubic-bezier(0.22,1,0.36,1), opacity 0.28s ease, transform 0.28s cubic-bezier(0.22,1,0.36,1)'
     : 'none';
+
+  _mobileCardW = cardW;
+  _mobileCX    = cx;
+  _mobileVW    = vw;
 
   spreadEl.style.width  = `${vw}px`;
   spreadEl.style.height = `${cardH + 32}px`;
 
-  const counter = document.getElementById('deck-counter');
-  if (counter) counter.textContent = `${mobileIdx + 1} of ${N}`;
+  if (!_hintShown && animated === false) {
+    _hintShown = true;
+    const hint = document.getElementById('swipe-hint');
+    if (hint) {
+      hint.classList.remove('show');
+      void hint.offsetWidth;
+      hint.classList.add('show');
+    }
+  }
 
   cardEls.forEach(({ el }, i) => {
     const raw = ((i - mobileIdx) % N + N) % N;
@@ -969,6 +995,38 @@ function startCycle(dir) {
 
 function stopCycle() {
   if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
+}
+
+// ── Swipe helpers ──
+function setMobileCardPositions(delta) {
+  const N = cardEls.length;
+  const progress = Math.min(1, Math.abs(delta) / (_mobileCardW || 260));
+  cardEls.forEach(({ el }, i) => {
+    const raw = ((i - mobileIdx) % N + N) % N;
+    const rel = raw > N / 2 ? raw - N : raw;
+    el.style.transition = 'none';
+    if (rel === 0) {
+      el.style.left = `${_mobileCX + delta}px`;
+      el.style.zIndex  = '30';
+      el.style.opacity = '1';
+      el.style.setProperty('--scale', `${(1 - progress * 0.04).toFixed(3)}`);
+    } else if (rel === 1) {
+      el.style.left    = `${_mobileVW - 26 + delta}px`;
+      el.style.zIndex  = delta < 0 ? '25' : '20';
+      el.style.opacity = `${Math.min(1, 0.30 + (delta < 0 ? progress * 0.70 : 0)).toFixed(2)}`;
+      el.style.setProperty('--scale', `${(0.88 + (delta < 0 ? progress * 0.12 : 0)).toFixed(3)}`);
+    } else if (rel === -1) {
+      el.style.left    = `${-(_mobileCardW - 26) + delta}px`;
+      el.style.zIndex  = delta > 0 ? '25' : '20';
+      el.style.opacity = `${Math.min(1, 0.30 + (delta > 0 ? progress * 0.70 : 0)).toFixed(2)}`;
+      el.style.setProperty('--scale', `${(0.88 + (delta > 0 ? progress * 0.12 : 0)).toFixed(3)}`);
+    } else {
+      el.style.left    = `${rel > 0 ? _mobileVW + 4 + delta : -(_mobileCardW + 4) + delta}px`;
+      el.style.zIndex  = '1';
+      el.style.opacity = '0';
+      el.style.setProperty('--scale', '0.88');
+    }
+  });
 }
 
 // Press-and-hold edge buttons
@@ -1023,11 +1081,45 @@ spreadEl.addEventListener('mousemove', e => {
 });
 spreadEl.addEventListener('mouseleave', resetHover);
 spreadEl.addEventListener('touchmove', e => {
+  if (isMobile()) return; // mobile swipe handled below
   e.preventDefault();
-  if (isMobile()) return;
   applyHover(e.touches[0].clientX - spreadEl.getBoundingClientRect().left);
 }, { passive: false });
-spreadEl.addEventListener('touchend', resetHover, { passive: true });
+spreadEl.addEventListener('touchend', e => {
+  if (!isMobile()) { resetHover(); }
+}, { passive: true });
+
+// ── Mobile swipe gestures ──
+spreadEl.addEventListener('touchstart', e => {
+  if (!isMobile()) return;
+  _swipeStartX = e.touches[0].clientX;
+  _swipeStartY = e.touches[0].clientY;
+  _swipeActive = true;
+}, { passive: true });
+
+spreadEl.addEventListener('touchmove', e => {
+  if (!isMobile() || !_swipeActive) return;
+  const dx = e.touches[0].clientX - _swipeStartX;
+  const dy = e.touches[0].clientY - _swipeStartY;
+  if (Math.abs(dx) > Math.abs(dy) + 4) {
+    setMobileCardPositions(dx);
+  }
+}, { passive: true });
+
+spreadEl.addEventListener('touchend', e => {
+  if (!isMobile() || !_swipeActive) return;
+  _swipeActive = false;
+  const dx = e.changedTouches[0].clientX - _swipeStartX;
+  const threshold = (_mobileCardW || 260) * 0.22;
+  if (Math.abs(dx) > threshold) {
+    e.preventDefault(); // suppress click after confirmed swipe
+    _wasSwiping = true;
+    cycleMobile(dx > 0 ? -1 : 1);
+    setTimeout(() => { _wasSwiping = false; }, 350);
+  } else {
+    layoutMobileDeck(true); // snap back
+  }
+}, { passive: false });
 
 // ── Magical sound (angelic chime) ──
 function scheduleMagicSound(ac, startAt) {
@@ -1102,15 +1194,15 @@ function drawCard(cardEl, crystal) {
   }
   activeCard = cardEl;
 
-  // Create AudioContext in click handler (required for iOS)
+  // Create AudioContext in user-gesture handler (required for iOS)
   const AC = window.AudioContext || window.webkitAudioContext;
-  let ac = null;
   if (AC) {
     try {
-      ac = new AC();
-      // Schedule sound to start ~850ms from now (when modal opens)
-      scheduleMagicSound(ac, ac.currentTime + 0.95);
-      setTimeout(() => { try { ac.close(); } catch(e){} }, 6000);
+      if (_ac) { try { _ac.close(); } catch(e){} }
+      _ac = new AC();
+      if (_ac.state === 'suspended') _ac.resume();
+      scheduleMagicSound(_ac, _ac.currentTime + 0.95);
+      setTimeout(() => { try { if (_ac) { _ac.close(); _ac = null; } } catch(e){} }, 9000);
     } catch(e) {}
   }
 
@@ -1129,6 +1221,7 @@ function drawCard(cardEl, crystal) {
 
 cardEls.forEach(({ el, crystal }) => {
   el.addEventListener('click', () => {
+    if (_wasSwiping) return;
     if (isMobile() && cardEls[mobileIdx]?.el !== el) return;
     drawCard(el, crystal);
   });
@@ -1142,7 +1235,6 @@ const overlay     = document.getElementById('overlay');
 const displayEl   = document.getElementById('crystalDisplay');
 const nameEl      = document.getElementById('crystalName');
 const energyEl    = document.getElementById('energyTag');
-const aboutEl     = document.getElementById('crystalAbout');
 const msgEl       = document.getElementById('crystalMsg');
 const saveBtnEl   = document.getElementById('saveBtn');
 let   currentCrystal = null;
@@ -1152,7 +1244,6 @@ function showModal(crystal) {
   displayEl.innerHTML  = crystalSVG(crystal);
   nameEl.textContent   = crystal.name;
   energyEl.textContent = crystal.energy;
-  aboutEl.textContent  = crystal.about;
   msgEl.textContent    = crystal.message;
   overlay.classList.add('open');
   overlay.querySelector('.modal').scrollTop = 0;
