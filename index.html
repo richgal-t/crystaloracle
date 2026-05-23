@@ -297,6 +297,25 @@
       margin: 0 auto 1rem;
     }
 
+    .about-label {
+      font-size: clamp(0.68rem, 2vw, 0.72rem);
+      text-transform: uppercase;
+      letter-spacing: 0.24em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+      text-align: left;
+    }
+
+    .crystal-about {
+      font-size: clamp(0.82rem, 2.4vw, 0.92rem);
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.5;
+      margin-bottom: 1.1rem;
+      text-align: left;
+      opacity: 0.85;
+    }
+
     .msg-label {
       font-size: clamp(0.68rem, 2vw, 0.72rem);
       text-transform: uppercase;
@@ -426,6 +445,8 @@
       <h2 class="crystal-name" id="crystalName"></h2>
       <p class="energy-tag" id="energyTag"></p>
       <div class="modal-rule"></div>
+      <p class="about-label">about</p>
+      <p class="crystal-about" id="crystalAbout"></p>
       <p class="msg-label">your message for today</p>
       <p class="message" id="crystalMsg"></p>
       <button class="save-btn" id="saveBtn">✦ &nbsp;Save to Photos</button>
@@ -568,217 +589,217 @@ const crystals = [
     name: "Amethyst", shape: "cluster",
     c: { light:"#d8a8f0", mid:"#9040c0", dark:"#4e1878", glow:"rgba(144,64,192,0.5)" },
     energy: "Intuition · Calm · Clarity",
-    properties: "Spiritual awareness  ·  Stress relief  ·  Inner peace",
+    about: "a stone of spiritual protection and sobriety of mind, revered across ancient civilisations",
     message: "Your intuition is clearer than you think right now. Slow down a little and listen to that quiet voice inside. It knows."
   },
   {
     name: "Rose Quartz", shape: "tumbled",
     c: { light:"#ffd8e8", mid:"#e890a8", dark:"#b06080", glow:"rgba(232,144,168,0.5)" },
     energy: "Love · Compassion · Healing",
-    properties: "Unconditional love  ·  Self-worth  ·  Emotional warmth",
+    about: "the stone of unconditional love, used in love rituals and offerings across ancient cultures",
     message: "Today is a really good day to be a little softer with yourself. You give so much love out. Let some of it come back in."
   },
   {
     name: "Clear Quartz", shape: "point",
     c: { light:"#f8fdff", mid:"#d8ecf8", dark:"#90aec0", glow:"rgba(216,236,248,0.55)" },
     energy: "Clarity · Amplification · Focus",
-    properties: "Intention-setting  ·  Healing  ·  Amplifies energy",
+    about: "the master healer, used in sacred ceremonies and healing practices across millennia",
     message: "Whatever you're putting your attention on is getting amplified today. So choose something that feels good and let your focus do the work."
   },
   {
     name: "Citrine", shape: "cluster",
     c: { light:"#ffe888", mid:"#e0a820", dark:"#9a7000", glow:"rgba(224,168,32,0.55)" },
     energy: "Abundance · Joy · Optimism",
-    properties: "Confidence  ·  Prosperity  ·  Creativity",
+    about: "the merchant's stone, carrying the energy of the sun and a magnet for abundance",
     message: "Good things are already here, even when they're easy to miss. Look for them. The warmth and abundance you want is closer than you realize."
   },
   {
     name: "Labradorite", shape: "slab",
     c: { light:"#70c8e0", mid:"#204870", dark:"#0c1e38", glow:"rgba(32,72,112,0.6)" },
     energy: "Transformation · Intuition · Magic",
-    properties: "Inner knowing  ·  Protection  ·  Awakening",
+    about: "born from the Aurora Borealis, a stone of magic, mystery, and hidden gifts",
     message: "Something magical is shifting beneath the surface, even if you can't quite see it yet. Trust the process you're in. The magic is already in motion."
   },
   {
     name: "Moonstone", shape: "tumbled",
     c: { light:"#f0eef8", mid:"#b8c4dc", dark:"#687090", glow:"rgba(184,196,220,0.45)" },
     energy: "New Beginnings · Intuition · Flow",
-    properties: "Feminine energy  ·  Emotional balance  ·  Inner strength",
+    about: "sacred to lunar goddesses across many traditions, carrying the tides of emotion within it",
     message: "You're in a phase, not a permanent state. Go with it instead of against it. You'll land where you're meant to."
   },
   {
     name: "Lapis Lazuli", shape: "rough",
     c: { light:"#6898d0", mid:"#1c4890", dark:"#081030", glow:"rgba(28,72,144,0.6)" },
     energy: "Wisdom · Truth · Expression",
-    properties: "Authentic communication  ·  Inner knowing  ·  Clarity",
+    about: "ground into pigment for Egyptian burial rites and worn by royalty as a symbol of truth",
     message: "You have something valuable to say today. Say it. Your voice and your perspective hold more weight than you give them credit for."
   },
   {
     name: "Tiger's Eye", shape: "rough",
     c: { light:"#d4a858", mid:"#9a6418", dark:"#4a2a08", glow:"rgba(154,100,24,0.5)" },
     energy: "Courage · Confidence · Focus",
-    properties: "Willpower  ·  Mental clarity  ·  Grounding",
+    about: "carried by Roman soldiers for courage, sharpening focus and steadying the will in battle",
     message: "That step you keep thinking about? Maybe today's the day to take it. You're steadier than you feel, and your footing is solid."
   },
   {
     name: "Selenite", shape: "point",
     c: { light:"#fefeff", mid:"#e4e0d0", dark:"#a09888", glow:"rgba(228,224,208,0.45)" },
     energy: "Peace · Cleansing · Clarity",
-    properties: "Energy clearing  ·  Calm  ·  Higher connection",
+    about: "named for Selene, goddess of the moon, holding celestial light and angelic energy",
     message: "Breathe something out today. Clear a little mental space and notice how much lighter everything gets when you let it."
   },
   {
     name: "Green Aventurine", shape: "tumbled",
     c: { light:"#78c888", mid:"#38804a", dark:"#163a20", glow:"rgba(56,128,74,0.5)" },
     energy: "Luck · Growth · Opportunity",
-    properties: "Prosperity  ·  Optimism  ·  Emotional calm",
+    about: "one of the luckiest stones in history, a trusted ally for gamblers and bold risk-takers",
     message: "Something good is finding its way to you. Stay open and keep your eyes soft. A door might already be cracking open."
   },
   {
     name: "Carnelian", shape: "tumbled",
     c: { light:"#ff8a50", mid:"#d05018", dark:"#7a2808", glow:"rgba(208,80,24,0.5)" },
     energy: "Creativity · Vitality · Action",
-    properties: "Motivation  ·  Passion  ·  Courage",
+    about: "worn by ancient warriors and orators, a stone of courage, passion, and life force",
     message: "There's real fire in you today. Whatever you've been putting off, lean into it now. The momentum is already there, waiting."
   },
   {
     name: "Malachite", shape: "slab",
     c: { light:"#58c870", mid:"#187040", dark:"#062a18", glow:"rgba(24,112,64,0.55)" },
     energy: "Transformation · Heart Healing",
-    properties: "Emotional balance  ·  Courage to grow  ·  Release",
+    about: "a stone of the heart and transformation, sometimes called the midwife stone for its role in rebirth",
     message: "Change is doing you a favour right now, even if it doesn't feel like it yet. Something better is growing in the space this is making."
   },
   {
     name: "Aquamarine", shape: "faceted",
     c: { light:"#a8e8f0", mid:"#40b0c8", dark:"#107888", glow:"rgba(64,176,200,0.5)" },
     energy: "Courage · Communication · Calm",
-    properties: "Clarity of expression  ·  Stress relief  ·  Harmony",
+    about: "sacred to sea goddesses, calming storms and protecting those who crossed the ocean",
     message: "Breathe first, then speak. The right words are already there. Approach today's conversations with an open heart and they'll go better than you expect."
   },
   {
     name: "Pyrite", shape: "cube",
     c: { light:"#f0e080", mid:"#c8a818", dark:"#786008", glow:"rgba(200,168,24,0.55)" },
     energy: "Abundance · Willpower · Confidence",
-    properties: "Manifestation  ·  Protection  ·  Strength",
+    about: "used in ancient shamanic practice as a mirror to see one's true power and potential",
     message: "You are genuinely more capable than you're giving yourself credit for right now. Stand in that today. You have more than enough to work with."
   },
   {
     name: "Lepidolite", shape: "slab",
     c: { light:"#e0b8e8", mid:"#a868c0", dark:"#583078", glow:"rgba(168,104,192,0.45)" },
     energy: "Calm · Transition · Balance",
-    properties: "Anxiety relief  ·  Emotional equilibrium  ·  Rest",
+    about: "a gentle ally through life's transitions, easing anxiety and softening life's sharp edges",
     message: "You don't have to figure it all out right now. Ease is available to you today, if you let yourself settle into it."
   },
   {
     name: "Sunstone", shape: "tumbled",
     c: { light:"#ffb858", mid:"#e07018", dark:"#802808", glow:"rgba(224,112,24,0.5)" },
     energy: "Joy · Vitality · Personal Power",
-    properties: "Optimism  ·  Independence  ·  Leadership",
+    about: "associated with Ra in ancient Egypt, carrying the light and warmth of the sun within it",
     message: "Be unapologetically yourself today. Your brightness is not too much. It's exactly what's needed, and it has a place here."
   },
   {
     name: "Rhodonite", shape: "tumbled",
     c: { light:"#e8889e", mid:"#c03c68", dark:"#601838", glow:"rgba(192,60,104,0.5)" },
     energy: "Forgiveness · Compassion · Healing",
-    properties: "Emotional balance  ·  Self-worth  ·  Love",
+    about: "known as the rescue stone, used by first responders and healers of the heart throughout history",
     message: "There's room to forgive today, yourself or someone else or both. Let yourself be the giver and receiver of grace. It suits you."
   },
   {
     name: "Sodalite", shape: "rough",
     c: { light:"#6888d0", mid:"#2840a0", dark:"#0e1850", glow:"rgba(40,64,160,0.55)" },
     energy: "Truth · Logic · Calm Mind",
-    properties: "Rational thought  ·  Honest communication  ·  Clarity",
+    about: "a stone of truth and inner knowing, quieting the ego and opening the third eye",
     message: "Trust your thinking today. Your reasoning is sound and your analysis is solid. Speak your truth with quiet confidence."
   },
   {
     name: "Obsidian", shape: "rough",
     c: { light:"#504860", mid:"#181420", dark:"#060408", glow:"rgba(48,40,60,0.5)" },
     energy: "Truth · Grounding · Protection",
-    properties: "Self-reflection  ·  Strength  ·  Clarity",
+    about: "used by ancient shamans as a scrying mirror to reveal shadow and release what no longer serves",
     message: "Be honest with yourself about what you actually need today. One small step toward that is more than enough."
   },
   {
     name: "Howlite", shape: "tumbled",
     c: { light:"#f4f0e8", mid:"#d0c8b8", dark:"#807870", glow:"rgba(208,200,184,0.4)" },
     energy: "Patience · Mindfulness · Rest",
-    properties: "Calming overactive mind  ·  Awareness  ·  Sleep",
+    about: "a stone of gentle awareness, absorbing anger and slowing the restless mind",
     message: "Slow down just a little today. Something beautiful is right in front of you. Be here for it instead of somewhere else in your head."
   },
   {
     name: "Angelite", shape: "tumbled",
     c: { light:"#b8daf2", mid:"#6898c4", dark:"#284878", glow:"rgba(104,152,196,0.45)" },
     energy: "Peace · Divine Connection · Compassion",
-    properties: "Serenity  ·  Gentle communication  ·  Guidance",
+    about: "a bridge to angelic realms, carrying a frequency of peace and gentle divine guidance",
     message: "You are being held today, even if you can't feel it. Speak gently, move gently, and trust that softness is its own kind of strength."
   },
   {
     name: "Fluorite", shape: "faceted",
     c: { light:"#c090f0", mid:"#7840c0", dark:"#351868", glow:"rgba(120,64,192,0.5)" },
     energy: "Focus · Mental Clarity · Learning",
-    properties: "Concentration  ·  Orderly thinking  ·  Balance",
+    about: "called the genius stone, absorbing chaotic energy and restructuring the mind's field",
     message: "If things feel a bit scattered today, just pick one thing and go there. Focus on that one thing and clarity will follow."
   },
   {
     name: "Bloodstone", shape: "rough",
     c: { light:"#50b060", mid:"#186028", dark:"#061c10", glow:"rgba(24,96,40,0.5)" },
     energy: "Courage · Strength · Vitality",
-    properties: "Resilience  ·  Endurance  ·  Confidence in action",
+    about: "carried by soldiers in ancient Rome to stop wounds and grant invincible courage in battle",
     message: "You have more endurance than you realize. Whatever today brings, you've genuinely got it. You're built for this."
   },
   {
     name: "Prehnite", shape: "tumbled",
     c: { light:"#c0e098", mid:"#70b050", dark:"#385820", glow:"rgba(112,176,80,0.45)" },
     energy: "Intuition · Healing · Letting Go",
-    properties: "Inner knowing  ·  Trust  ·  Peaceful release",
+    about: "the first mineral named after a person, healing the healer and honouring what is ready to go",
     message: "Your inner compass is reliable. Release what you've been holding onto and let your intuition lead. It already knows the way."
   },
   {
     name: "Black Tourmaline", shape: "rough",
     c: { light:"#404050", mid:"#181820", dark:"#060608", glow:"rgba(40,40,60,0.45)" },
     energy: "Grounding · Protection · Stability",
-    properties: "Energetic boundaries  ·  Safety  ·  Strength",
+    about: "one of the most powerful protective stones, used for centuries to ward off negativity",
     message: "You are grounded and protected today. Your boundaries are yours to hold and to keep. Stand firmly in your own energy."
   },
   {
     name: "Larimar", shape: "tumbled",
     c: { light:"#c0ecf8", mid:"#48b0d8", dark:"#186898", glow:"rgba(72,176,216,0.5)" },
     energy: "Serenity · Flow · Feminine Power",
-    properties: "Calm  ·  Oceanic clarity  ·  Ease",
+    about: "found only in the Dominican Republic, carrying the memory of Atlantis within its ocean blue",
     message: "Stop holding on so tightly today. Like the ocean, peace comes back naturally when you stop resisting it. Let it find you."
   },
   {
     name: "Kyanite", shape: "slab",
     c: { light:"#78b0e8", mid:"#2858b0", dark:"#0c1e60", glow:"rgba(40,88,176,0.55)" },
     energy: "Alignment · Truth · Balance",
-    properties: "Clear communication  ·  Alignment  ·  Bridging",
+    about: "one of the rare stones that never holds negative energy, a natural bridge between people",
     message: "Say what you mean today. Clear, honest words create the right bridges. Your truth is allowed to take up space, no softening needed."
   },
   {
     name: "Garnet", shape: "faceted",
     c: { light:"#e84858", mid:"#b01828", dark:"#580008", glow:"rgba(176,24,40,0.55)" },
     energy: "Passion · Vitality · Devotion",
-    properties: "Creative fire  ·  Commitment  ·  Strength",
+    about: "carried as a protective talisman for centuries, lighting the way through darkness",
     message: "Let what you love remind you why you're doing all of this. Your devotion and your fire are exactly what's needed right now."
   },
   {
     name: "Amazonite", shape: "rough",
     c: { light:"#88d8c0", mid:"#28a078", dark:"#0c5838", glow:"rgba(40,160,120,0.5)" },
     energy: "Truth · Courage · Harmony",
-    properties: "Authentic voice  ·  Boundaries  ·  Clarity",
+    about: "worn by Amazonian warriors as a stone of courageous truth-telling and fierce integrity",
     message: "What feels like fear might just be something worth looking at more closely. Trust your own knowing and hold your ground, gently but firmly."
   },
   {
     name: "Chrysocolla", shape: "slab",
     c: { light:"#72c8c0", mid:"#1890a0", dark:"#084858", glow:"rgba(24,144,160,0.5)" },
     energy: "Wisdom · Expression · Healing",
-    properties: "Feminine strength  ·  Gentle power  ·  Teaching",
+    about: "associated with the great teachers and healers of antiquity, a stone of feminine wisdom",
     message: "Gentleness is not weakness. Your most powerful move today might just be your most compassionate one."
   },
   {
     name: "Charoite", shape: "tumbled",
     c: { light:"#c888e0", mid:"#7828a8", dark:"#380860", glow:"rgba(120,40,168,0.5)" },
     energy: "Transformation · Purpose · Acceptance",
-    properties: "Soul path  ·  Release of fear  ·  Spiritual insight",
+    about: "found only along one Siberian river, transforming fear into faith and service into love",
     message: "Something that felt like an obstacle might actually be part of the path. Trust where you're being led, even when it's unclear."
   }
 ];
@@ -1121,6 +1142,7 @@ const overlay     = document.getElementById('overlay');
 const displayEl   = document.getElementById('crystalDisplay');
 const nameEl      = document.getElementById('crystalName');
 const energyEl    = document.getElementById('energyTag');
+const aboutEl     = document.getElementById('crystalAbout');
 const msgEl       = document.getElementById('crystalMsg');
 const saveBtnEl   = document.getElementById('saveBtn');
 let   currentCrystal = null;
@@ -1130,6 +1152,7 @@ function showModal(crystal) {
   displayEl.innerHTML  = crystalSVG(crystal);
   nameEl.textContent   = crystal.name;
   energyEl.textContent = crystal.energy;
+  aboutEl.textContent  = crystal.about;
   msgEl.textContent    = crystal.message;
   overlay.classList.add('open');
   overlay.querySelector('.modal').scrollTop = 0;
