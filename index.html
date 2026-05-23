@@ -89,6 +89,9 @@
       position: relative;
       overflow: visible;
       touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
     }
 
     /* ── Card ── */
@@ -104,6 +107,9 @@
         filter 0.55s ease;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
       border-radius: 9px;
       will-change: transform;
       filter: none;
@@ -413,8 +419,31 @@
       100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
     }
 
+    /* ── Mobile bottom area ── */
+    #mobile-bottom {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.28rem;
+      padding: 0.45rem 1rem 0.3rem;
+      text-align: center;
+    }
+    .mobile-instruction {
+      font-size: clamp(0.82rem, 2.4vw, 0.9rem);
+      color: var(--muted);
+      font-style: italic;
+    }
+    #mobile-counter {
+      font-size: clamp(0.64rem, 1.8vw, 0.70rem);
+      color: var(--muted);
+      letter-spacing: 0.22em;
+      opacity: 0.58;
+      font-family: 'Cormorant Garant', Georgia, serif;
+    }
+
     @media (max-width: 639px) {
       #mobile-controls { display: flex; }
+      #mobile-bottom { display: flex; }
       #swipe-hint { display: block; }
       #spread-wrap { overflow: hidden; padding-bottom: 0; }
       .instruction { display: none; }
@@ -440,7 +469,12 @@
   </div>
 </div>
 
-<div id="swipe-hint">swipe to explore</div>
+<div id="swipe-hint">swipe · or press &amp; hold ‹ › to browse fast</div>
+
+<div id="mobile-bottom">
+  <p class="mobile-instruction">still your mind &amp; choose the card that calls to you</p>
+  <span id="mobile-counter">1 · 33</span>
+</div>
 
 <footer>trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
 
@@ -807,6 +841,20 @@ const crystals = [
     energy: "Transformation · Purpose · Acceptance",
     about: "a stone of soul-level transformation, rare and singular in the way it turns fear into faith and purpose into love",
     message: "Something that felt like an obstacle might actually be part of the path. Trust where you're being led, even when it's unclear. This is unfolding in your favour."
+  },
+  {
+    name: "Celestite", shape: "cluster",
+    c: { light:"#d8eef8", mid:"#88b8d8", dark:"#3878a0", glow:"rgba(136,184,216,0.45)" },
+    energy: "Serenity · Angelic Connection · Peace",
+    about: "a stone of soft celestial calm, opening a channel to angelic guidance and the kind of peace that quiets even the busiest mind",
+    message: "You're being called toward something slower and softer right now. Tune out the noise and listen for the quieter signal underneath. It's there for you. You don't have to reach far to feel it."
+  },
+  {
+    name: "Rhodochrosite", shape: "slab",
+    c: { light:"#ffb8c8", mid:"#e06080", dark:"#902040", glow:"rgba(224,96,128,0.5)" },
+    energy: "Self-Love · Inner Child · Healing",
+    about: "a stone of deep self-compassion and emotional healing, gently uncovering the tenderness that deserves to be loved back into wholeness",
+    message: "There is something tender in you that deserves your own attention today. Be gentle with the parts of yourself that are still healing. Love isn't only something you give away. It begins with you."
   }
 ];
 
@@ -937,6 +985,9 @@ function layoutMobileDeck(animated) {
   spreadEl.style.width  = `${vw}px`;
   spreadEl.style.height = `${cardH + 32}px`;
 
+  const mobileCounter = document.getElementById('mobile-counter');
+  if (mobileCounter) mobileCounter.textContent = `${mobileIdx + 1} · ${N}`;
+
   if (!_hintShown && animated === false) {
     _hintShown = true;
     const hint = document.getElementById('swipe-hint');
@@ -1038,6 +1089,29 @@ function setMobileCardPositions(delta) {
 });
 window.addEventListener('pointerup',     stopCycle);
 window.addEventListener('pointercancel', stopCycle);
+
+// ── iOS audio unlock — create & resume AudioContext on first touch ──
+(function() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  function unlock() {
+    if (_ac && _ac.state !== 'closed') { _ac.resume(); return; }
+    try {
+      _ac = new AC();
+      _ac.resume();
+      // Play a silent buffer so iOS considers it "user-activated"
+      const buf = _ac.createBuffer(1, 1, _ac.sampleRate);
+      const src = _ac.createBufferSource();
+      src.buffer = buf;
+      src.connect(_ac.destination);
+      src.start(0);
+    } catch(e) {}
+    document.removeEventListener('touchstart', unlock);
+    document.removeEventListener('click', unlock);
+  }
+  document.addEventListener('touchstart', unlock, { passive: true });
+  document.addEventListener('click', unlock, { once: true });
+})();
 
 layoutSpread();
 window.addEventListener('resize', () => {
@@ -1194,17 +1268,20 @@ function drawCard(cardEl, crystal) {
   }
   activeCard = cardEl;
 
-  // Create AudioContext in user-gesture handler (required for iOS)
+  // Play sound — reuse pre-unlocked context if available, else create
   const AC = window.AudioContext || window.webkitAudioContext;
   if (AC) {
     try {
-      if (_ac) { try { _ac.close(); } catch(e){} }
-      _ac = new AC();
+      if (!_ac || _ac.state === 'closed') _ac = new AC();
       if (_ac.state === 'suspended') _ac.resume();
       scheduleMagicSound(_ac, _ac.currentTime + 0.95);
-      setTimeout(() => { try { if (_ac) { _ac.close(); _ac = null; } } catch(e){} }, 9000);
+      setTimeout(() => { try { if (_ac && _ac.state !== 'closed') { _ac.close(); _ac = null; } } catch(e){} }, 9000);
     } catch(e) {}
   }
+
+  // Let card pop above spread-wrap on mobile (overflow: hidden would clip it)
+  const swWrap = document.getElementById('spread-wrap');
+  if (isMobile() && swWrap) swWrap.style.overflow = 'visible';
 
   cardEl.style.filter = 'none';
   cardEl.classList.remove('drawing');
@@ -1215,6 +1292,7 @@ function drawCard(cardEl, crystal) {
 
   setTimeout(() => {
     cardEl.classList.remove('drawing');
+    if (swWrap) swWrap.style.overflow = '';
     showModal(crystal);
   }, 1060);
 }
