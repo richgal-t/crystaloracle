@@ -344,6 +344,54 @@
       letter-spacing: 0.12em;
       font-style: italic;
     }
+
+    /* ── Mobile deck controls ── */
+    #mobile-controls {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 0.7rem 0 0.3rem;
+      position: relative;
+      z-index: 2;
+    }
+    .deck-btn {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      border: 1px solid rgba(205,160,55,0.45);
+      background: rgba(255,255,255,0.22);
+      color: rgba(180,130,30,0.90);
+      font-size: 2rem;
+      line-height: 1;
+      font-family: Georgia, serif;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background 0.12s, transform 0.1s;
+    }
+    .deck-btn:active { transform: scale(0.90); background: rgba(255,255,255,0.38); }
+    #deck-counter {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+      font-family: 'Cormorant Garant', Georgia, serif;
+      min-width: 56px;
+      text-align: center;
+      font-style: italic;
+      opacity: 0.75;
+    }
+
+    @media (max-width: 639px) {
+      #mobile-controls { display: flex; }
+      #spread-wrap { overflow: hidden; padding-bottom: 0; }
+      .instruction { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -359,6 +407,12 @@
 
 <div id="spread-wrap">
   <div id="spread"></div>
+</div>
+
+<div id="mobile-controls">
+  <button class="deck-btn" id="btn-prev">&#8249;</button>
+  <span id="deck-counter">1 of 30</span>
+  <button class="deck-btn" id="btn-next">&#8250;</button>
 </div>
 
 <footer>trust your intuition &nbsp;·&nbsp; made by tej with love</footer>
@@ -768,49 +822,143 @@ deck.forEach((crystal, i) => {
   cardEls.push({ el: card, crystal });
 });
 
-// ── Arch / inverted-U layout ──
+// ── Layout ──
+const MOBILE_BP = 640;
+let mobileIdx   = 0;
+let cycleTimer  = null;
 let resizeTimer;
 
+function isMobile() { return window.innerWidth < MOBILE_BP; }
+
 function layoutSpread() {
-  const vw      = window.innerWidth;
-  const availW  = Math.min(vw, 940) - 18;
-  const N       = cardEls.length;
-  const overlapRatio = vw < 480 ? 0.18 : 0.22;
-  const maxCardW     = vw < 480 ? 110  : 140;
+  const mc = document.getElementById('mobile-controls');
+  if (isMobile()) {
+    if (mc) mc.style.display = 'flex';
+    layoutMobileDeck(false);
+  } else {
+    if (mc) mc.style.display = 'none';
+    layoutDesktopArch();
+  }
+}
+
+function layoutDesktopArch() {
+  const vw       = window.innerWidth;
+  const availW   = Math.min(vw, 940) - 18;
+  const N        = cardEls.length;
+  const overlapRatio = 0.17;
   let cardW = availW / (1 + (N - 1) * overlapRatio);
-  cardW = Math.max(32, Math.min(maxCardW, cardW));
-  const cardH   = Math.round(cardW * 1.52);
-  const step    = cardW * overlapRatio;
-  const totalW  = cardW + (N - 1) * step;
-  const topPad  = Math.round(cardH * 0.42); // room for center-card lift
-  const arcDepth = Math.round(cardH * 0.28); // arch depth (edges dip by this much)
-  const maxRot  = 26;
+  cardW = Math.max(36, Math.min(180, cardW));
+  const cardH    = Math.round(cardW * 1.52);
+  const step     = cardW * overlapRatio;
+  const totalW   = cardW + (N - 1) * step;
+  const topPad   = Math.round(cardH * 0.52);
+  const arcDepth = Math.round(cardH * 0.36);
+  const maxRot   = 26;
 
   spreadEl.style.width  = `${totalW}px`;
   spreadEl.style.height = `${topPad + arcDepth + cardH + 20}px`;
 
   cardEls.forEach(({ el }, i) => {
-    const t   = N > 1 ? i / (N - 1) : 0.5;
-    const x   = i * step;
-    // Inverted-U: center at top (y=topPad), edges curve down (y=topPad+arcDepth)
+    const t     = N > 1 ? i / (N - 1) : 0.5;
+    const x     = i * step;
     const archY = topPad + arcDepth * Math.pow(2 * t - 1, 2);
     const rot   = (t - 0.5) * maxRot;
 
-    el.style.width  = `${cardW}px`;
-    el.style.height = `${cardH}px`;
-    el.style.left   = `${x}px`;
-    el.style.top    = `${archY}px`;
-    el.style.zIndex = i + 1;
+    el.style.transition = '';
+    el.style.opacity    = '';
+    el.style.width      = `${cardW}px`;
+    el.style.height     = `${cardH}px`;
+    el.style.left       = `${x}px`;
+    el.style.top        = `${archY}px`;
+    el.style.zIndex     = i + 1;
     el.style.setProperty('--base-rot', `${rot.toFixed(2)}deg`);
     el.style.setProperty('--lift', '0px');
     el.style.setProperty('--scale', '1');
-    el.style.filter = 'none';
-
-    // Store center-x for hover detection (card center before rotation)
-    el.dataset.cx = x + cardW / 2;
-    el.dataset.cardW = cardW;
+    el.style.filter     = 'none';
+    el.dataset.cx       = x + cardW / 2;
+    el.dataset.cardW    = cardW;
   });
 }
+
+function layoutMobileDeck(animated) {
+  const vw     = window.innerWidth;
+  const availH = window.innerHeight - 280;
+  const maxByW = Math.round(vw * 0.78);
+  const maxByH = Math.round(availH / 1.52);
+  const cardW  = Math.max(200, Math.min(maxByW, maxByH));
+  const cardH  = Math.round(cardW * 1.52);
+  const N      = cardEls.length;
+  const cx     = Math.round((vw - cardW) / 2);
+  const cy     = 12;
+  const trans  = animated
+    ? 'left 0.28s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.28s ease, transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94)'
+    : 'none';
+
+  spreadEl.style.width  = `${vw}px`;
+  spreadEl.style.height = `${cardH + 32}px`;
+
+  const counter = document.getElementById('deck-counter');
+  if (counter) counter.textContent = `${mobileIdx + 1} of ${N}`;
+
+  cardEls.forEach(({ el }, i) => {
+    const raw = ((i - mobileIdx) % N + N) % N;
+    const rel = raw > N / 2 ? raw - N : raw; // -N/2 … N/2
+
+    el.style.transition = trans;
+    el.style.width      = `${cardW}px`;
+    el.style.height     = `${cardH}px`;
+    el.style.top        = `${cy}px`;
+    el.style.setProperty('--base-rot', '0deg');
+    el.style.setProperty('--lift', '0px');
+    el.style.filter     = 'none';
+
+    if (rel === 0) {
+      el.style.left    = `${cx}px`;
+      el.style.zIndex  = '30';
+      el.style.opacity = '1';
+      el.style.setProperty('--scale', '1');
+    } else if (rel === 1) {
+      el.style.left    = `${vw - 26}px`;
+      el.style.zIndex  = '20';
+      el.style.opacity = '0.30';
+      el.style.setProperty('--scale', '0.88');
+    } else if (rel === -1) {
+      el.style.left    = `${-(cardW - 26)}px`;
+      el.style.zIndex  = '20';
+      el.style.opacity = '0.30';
+      el.style.setProperty('--scale', '0.88');
+    } else {
+      el.style.left    = `${rel > 0 ? vw + 4 : -(cardW + 4)}px`;
+      el.style.zIndex  = '1';
+      el.style.opacity = '0';
+      el.style.setProperty('--scale', '0.88');
+    }
+  });
+}
+
+function cycleMobile(dir) {
+  mobileIdx = ((mobileIdx + dir) % cardEls.length + cardEls.length) % cardEls.length;
+  layoutMobileDeck(true);
+}
+
+function startCycle(dir) {
+  cycleMobile(dir);
+  cycleTimer = setInterval(() => cycleMobile(dir), 85);
+}
+
+function stopCycle() {
+  if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
+}
+
+// Press-and-hold edge buttons
+['prev', 'next'].forEach(id => {
+  const btn = document.getElementById(`btn-${id}`);
+  if (!btn) return;
+  const dir = id === 'next' ? 1 : -1;
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); startCycle(dir); });
+});
+window.addEventListener('pointerup',     stopCycle);
+window.addEventListener('pointercancel', stopCycle);
 
 layoutSpread();
 window.addEventListener('resize', () => {
@@ -855,6 +1003,7 @@ spreadEl.addEventListener('mousemove', e => {
 spreadEl.addEventListener('mouseleave', resetHover);
 spreadEl.addEventListener('touchmove', e => {
   e.preventDefault();
+  if (isMobile()) return;
   applyHover(e.touches[0].clientX - spreadEl.getBoundingClientRect().left);
 }, { passive: false });
 spreadEl.addEventListener('touchend', resetHover, { passive: true });
@@ -958,7 +1107,10 @@ function drawCard(cardEl, crystal) {
 }
 
 cardEls.forEach(({ el, crystal }) => {
-  el.addEventListener('click', () => drawCard(el, crystal));
+  el.addEventListener('click', () => {
+    if (isMobile() && cardEls[mobileIdx]?.el !== el) return;
+    drawCard(el, crystal);
+  });
   el.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drawCard(el, crystal); }
   });
